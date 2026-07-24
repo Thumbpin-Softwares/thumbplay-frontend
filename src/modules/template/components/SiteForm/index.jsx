@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { FileText } from "lucide-react";
+import { ChevronDown, FileText } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // All three route through the n8n model-tour pipeline now (it switches its
 // master prompt internally based on `type`). "Land" is shown to the user in
@@ -24,13 +30,13 @@ const CLASSIFICATIONS = [
   { id: "plotted", label: "Land" },
 ];
 
-const GLOBAL_REQUIRED = ["propertyClassification", "projectName", "projectType", "projectArea", "location", "tonality", "language"];
+const GLOBAL_REQUIRED = ["propertyClassification", "projectName", "projectType", "projectArea", "location", "tonality", "landmarks", "connectivity", "vibe", "language"];
 
-// Checks the fields required for the current classification. Language/Vibe
-// are global (every property type needs them, not just Residential).
-// Plotted only requires Carpet Area beyond the global set; Commercial
-// additionally requires Shop Type + Shop Built-up Area; Residential also
-// requires Carpet Area.
+// Checks the fields required for the current classification. Tonality,
+// Landmarks, Connectivity, Vibe, and Language are global (every property
+// type needs them, not just Residential). Plotted only requires Carpet Area
+// beyond the global set; Commercial additionally requires Shop Type + Shop
+// Built-up Area; Residential also requires Carpet Area.
 export function isSiteFormValid(values = {}) {
   const filled = (key) => !!values[key]?.toString().trim();
   if (!GLOBAL_REQUIRED.every(filled)) return false;
@@ -43,6 +49,19 @@ export function isSiteFormValid(values = {}) {
   }
   return false;
 }
+
+const TONALITY_OPTIONS = [
+  "Aspirational",
+  "Premium",
+  "Warm & Inviting",
+  "Luxurious",
+  "Energetic",
+  "Sophisticated",
+  "Friendly",
+  "Elegant",
+  "Modern",
+  "Trustworthy",
+];
 
 const PROJECT_TYPES = [
   { id: "affordable", label: "Affordable" },
@@ -80,6 +99,50 @@ function TextField({ label, field, values, setField, required, placeholder, hint
         className={textarea ? "min-h-20 resize-none text-sm" : "text-sm"}
       />
       {hint && <p className="text-[11px] text-neutral-400">{hint}</p>}
+    </div>
+  );
+}
+
+// Tonality allows picking several descriptors at once — stored as the same
+// kind of comma-joined string a free-text tonality field would produce, so
+// downstream consumers (modelTourScriptRequest, isSiteFormValid) don't need
+// to know it's backed by a multi-select.
+function TonalityField({ values, setField, required }) {
+  const selected = (values.tonality || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const toggle = (opt) => {
+    const next = selected.includes(opt) ? selected.filter((s) => s !== opt) : [...selected, opt];
+    setField("tonality", next.join(", "));
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <FieldLabel required={required}>Tonality</FieldLabel>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="flex w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm text-left"
+          >
+            <span className={selected.length ? "" : "text-muted-foreground"}>
+              {selected.length ? selected.join(", ") : "Select tonality"}
+            </span>
+            <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-56">
+          {TONALITY_OPTIONS.map((opt) => (
+            <DropdownMenuCheckboxItem
+              key={opt}
+              checked={selected.includes(opt)}
+              onSelect={(e) => e.preventDefault()}
+              onCheckedChange={() => toggle(opt)}
+            >
+              {opt}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <p className="text-[11px] text-neutral-400">Guides the AI's tone for the generated script</p>
     </div>
   );
 }
@@ -170,20 +233,11 @@ export function SiteForm({ values = {}, onChange }) {
           <TextField label="Location" field="location" values={values} setField={setField} required />
         </div>
 
-        <TextField
-          label="Tonality"
-          field="tonality"
-          values={values}
-          setField={setField}
-          required
-          placeholder="e.g., Aspirational, premium, warm & inviting"
-          hint="Guides the AI's tone for the generated script"
-          textarea
-        />
+        <TonalityField values={values} setField={setField} required />
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <TextField label="Landmarks" field="landmarks" values={values} setField={setField} />
-          <TextField label="Connectivity" field="connectivity" values={values} setField={setField} />
+          <TextField label="Landmarks" field="landmarks" values={values} setField={setField} required />
+          <TextField label="Connectivity" field="connectivity" values={values} setField={setField} required />
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
@@ -207,6 +261,7 @@ export function SiteForm({ values = {}, onChange }) {
             field="vibe"
             values={values}
             setField={setField}
+            required
             placeholder="e.g., calm, energetic, cinematic"
             hint="Guides the video's visual mood"
           />

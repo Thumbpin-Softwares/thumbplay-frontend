@@ -114,6 +114,12 @@ export default function PropertyCommercialRunner({ template }) {
     uploadedImages.length === images.length &&
     avatarHook.selectedAvatars.length >= 1;
 
+  // How far the capsule lets you click ahead — driven by which steps
+  // actually have data behind them, not just how far you've clicked before.
+  // Step 1 (Script) needs Add Assets' data (isValid); step 2 (Finalize)
+  // additionally needs a generated script/storyboard to show.
+  const dataMaxStep = modelTourScript || storyboard ? 2 : isValid ? 1 : 0;
+
   // Derived at render time, not synced into state via an effect — always
   // reflects whatever's finished uploading so far, no cascading setState.
   const scriptValuesWithImages = {
@@ -242,7 +248,12 @@ export default function PropertyCommercialRunner({ template }) {
 
       {step < 3 && !modelTourGenerating && (
         <div className="shrink-0 flex justify-center py-3">
-          <StepCapsule currentStep={step} steps={template.steps || STEP_LABELS} />
+          <StepCapsule
+            currentStep={step}
+            steps={template.steps || STEP_LABELS}
+            maxStep={dataMaxStep}
+            onStepClick={setStep}
+          />
         </div>
       )}
 
