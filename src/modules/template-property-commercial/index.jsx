@@ -17,10 +17,10 @@ import { Button } from "@/components/ui/button";
 
 const STEP_LABELS = ["Add Assets", "Script", "Finalize"];
 
-// Only Residential is wired to fal's omni-hometour-pipeline workflow (one
-// direct call, no storyboard). Commercial and Plotted keep using the
-// generic script -> images -> videos pipeline every other template uses.
-const MODEL_TOUR_CLASSIFICATION = "residential";
+// All three classifications route through the n8n model-tour pipeline now —
+// n8n switches its master prompt internally based on `type`. "plotted" is
+// shown to the user as "Land" (see SiteForm), the value itself is unchanged.
+const MODEL_TOUR_CLASSIFICATIONS = new Set(["residential", "commercial", "plotted"]);
 
 // Persists the Add Assets / Script form (images already have permanent R2
 // URLs by the time they're in state, avatar selection, and scriptValues) so
@@ -30,12 +30,13 @@ const MODEL_TOUR_CLASSIFICATION = "residential";
 const FORM_STATE_KEY = "model-tour-form-state";
 
 // Property Commercial's own runner — wires the shared template pieces
-// (StepCapsule, AddAssetsStep, StepScript, StepFinalize, StepGeneration) to
-// this template's state. On successful storyboard generation, step 2
-// (Finalize) takes over — the raw frames aren't shown to the user, they're
-// just handed to StepFinalize, which renders them into images and, once the
-// user hits Continue, hands those image frames off to step 3 (StepGeneration)
-// to animate into final clips.
+// (StepCapsule, AddAssetsStep, StepScript) plus the model-tour-specific
+// finalize/generation screens to this template's state. All three
+// classifications currently route through the n8n model-tour pipeline
+// (ModelTourFinalize -> ModelTourGeneration); the generic StepFinalize ->
+// StepGeneration path is unreachable while that's true, kept only so a
+// classification can be pulled back out of MODEL_TOUR_CLASSIFICATIONS later
+// without rebuilding this fallback.
 export default function PropertyCommercialRunner({ template }) {
   const [step, setStep] = useState(0);
   const [images, setImages] = useState([]);
@@ -164,6 +165,21 @@ export default function PropertyCommercialRunner({ template }) {
   // model-tour workflow does gender-detection/scripting/TTS/video, split
   // across two calls: /model-tour/script (checkpoint, synchronous, returns
   // editable JSON) and /model-tour/generate (fires the actual render).
+  // Backend only has one carpetArea/amenities slot each — Commercial's own
+  // fields (shopType/shopBuiltUpArea/footfall/brandRelationships/
+  // revenuePotential) have no dedicated slot, so shopBuiltUpArea stands in
+  // for carpetArea and the rest get folded into amenities as labeled text
+  // rather than silently dropped.
+  const isCommercial = scriptValues.propertyClassification === "commercial";
+  const commercialDetails = [
+    scriptValues.shopType && `Shop Type: ${scriptValues.shopType}`,
+    scriptValues.footfall && `Footfall: ${scriptValues.footfall}`,
+    scriptValues.brandRelationships && `Brand Relationships: ${scriptValues.brandRelationships}`,
+    scriptValues.revenuePotential && `Revenue Potential: ${scriptValues.revenuePotential}`,
+  ]
+    .filter(Boolean)
+    .join("; ");
+
   const modelTourScriptRequest = {
     propertyName: scriptValues.projectName || "",
     type: scriptValues.propertyClassification || undefined,
@@ -171,8 +187,8 @@ export default function PropertyCommercialRunner({ template }) {
     connectivity: scriptValues.connectivity || "",
     language: scriptValues.language || "",
     tierClass: scriptValues.projectType || "",
-    carpetArea: scriptValues.carpetArea || "",
-    amenities: scriptValues.amenities || "",
+    carpetArea: (isCommercial ? scriptValues.shopBuiltUpArea : scriptValues.carpetArea) || "",
+    amenities: (isCommercial ? commercialDetails : scriptValues.amenities) || "",
     tonality: scriptValues.tonality || "",
     vibe: scriptValues.vibe || "",
     avatarImageUrls: avatarHook.selectedAvatars.map((a) => a.url).slice(0, 4),
@@ -199,7 +215,7 @@ export default function PropertyCommercialRunner({ template }) {
   };
 
   const handleContinueFromScript = () => {
-    if (scriptValues.propertyClassification === MODEL_TOUR_CLASSIFICATION) {
+    if (MODEL_TOUR_CLASSIFICATIONS.has(scriptValues.propertyClassification)) {
       handleGenerateModelTourScript();
     } else {
       handleGenerateScript();
@@ -261,14 +277,14 @@ export default function PropertyCommercialRunner({ template }) {
               onNext={handleContinueFromScript}
               loading={generatingScript || generatingModelTourScript}
               continueLabel={
-                scriptValues.propertyClassification === MODEL_TOUR_CLASSIFICATION
+                MODEL_TOUR_CLASSIFICATIONS.has(scriptValues.propertyClassification)
                   ? "Review & Finalize"
                   : "Generate Storyboard"
               }
             />
           )}
 
-          {step === 2 && scriptValues.propertyClassification === MODEL_TOUR_CLASSIFICATION && (
+          {step === 2 && MODEL_TOUR_CLASSIFICATIONS.has(scriptValues.propertyClassification) && (
             <ModelTourFinalize
               images={images}
               selectedAvatars={avatarHook.selectedAvatars}
@@ -279,7 +295,7 @@ export default function PropertyCommercialRunner({ template }) {
             />
           )}
 
-          {step === 2 && scriptValues.propertyClassification !== MODEL_TOUR_CLASSIFICATION && (
+          {step === 2 && !MODEL_TOUR_CLASSIFICATIONS.has(scriptValues.propertyClassification) && (
             <StepFinalize
               template={template}
               storyboard={storyboard}

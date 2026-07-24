@@ -14,13 +14,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-// Commercial/Plotted are temporarily disabled — only Residential is wired
-// to a working generation flow (omni-hometour-pipeline) right now; the
-// generic-pipeline flow behind Commercial/Plotted is being reworked.
+// All three route through the n8n model-tour pipeline now (it switches its
+// master prompt internally based on `type`). "Land" is shown to the user in
+// place of "Plotted" — the value sent as `type` is still "plotted", n8n's
+// switch doesn't change.
 const CLASSIFICATIONS = [
-  { id: "commercial", label: "Commercial", disabled: true },
+  { id: "commercial", label: "Commercial" },
   { id: "residential", label: "Residential" },
-  { id: "plotted", label: "Plotted", disabled: true },
+  { id: "plotted", label: "Land" },
 ];
 
 const GLOBAL_REQUIRED = ["propertyClassification", "projectName", "projectType", "projectArea", "location", "tonality", "language"];
@@ -95,11 +96,9 @@ export function SiteForm({ values = {}, onChange }) {
   const setField = (key, val) => onChange?.({ ...values, [key]: val });
   const classification = values.propertyClassification;
 
-  // Residential is the only selectable classification while Commercial/
-  // Plotted are disabled, so default to it rather than making the user
-  // click the one enabled option every time. Only fires once on mount and
-  // only if nothing's set yet, so a session-restored classification (or a
-  // future re-enabled Commercial/Plotted default) isn't clobbered.
+  // Defaults to Residential so the user isn't forced to make a choice
+  // before doing anything else. Only fires once on mount and only if
+  // nothing's set yet, so a session-restored classification isn't clobbered.
   useEffect(() => {
     if (!classification) setField("propertyClassification", "residential");
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AlertTriangle, ChevronLeft, ChevronRight, ImagePlus, User2, FileJson } from "lucide-react";
+import { ChevronLeft, ChevronRight, ImagePlus, User2, Clapperboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -19,35 +19,52 @@ function Section({ icon: Icon, title, children }) {
   );
 }
 
+// Replaces a scene's voiceover_audio_script by scene_chunk_id, leaving
+// everything else in the script (headers/body/gender/cost/cinematic_direction,
+// all of it) untouched — we only ever expose the voiceover line for editing.
+function updateVoiceover(script, sceneId, value) {
+  const storyboard = Array.isArray(script?.storyboard) ? script.storyboard : [];
+  return {
+    ...script,
+    storyboard: storyboard.map((scene) =>
+      scene.scene_chunk_id === sceneId ? { ...scene, voiceover_audio_script: value } : scene
+    ),
+  };
+}
+
 // Review step for the residential (n8n model-tour) flow. n8n's /model-tour/script
-// call already merged the form inputs, predicted avatar gender, and built the
-// master prompt into one JSON blob — we just let the user read/edit that raw
-// JSON here before it's sent back to n8n to actually render the video. We never
-// interpret its shape (it's n8n's to define), so this is a plain JSON editor
-// rather than a field-by-field form.
+// call returns a big blob (webhook request echo + gender/cost/storyboard) — we
+// only surface what the user should actually touch: one card per storyboard
+// scene, editing just its voiceover line. Everything else in the script is
+// carried through untouched and sent back as-is on Generate.
 export function ModelTourFinalize({ images = [], selectedAvatars = [], script, onChange, onBack, onGenerate }) {
   const propertyPhotos = images.filter((img) => img.r2Url || img.url);
-  const [text, setText] = useState(() => JSON.stringify(script ?? {}, null, 2));
-  const [parseError, setParseError] = useState(null);
+  const storyboard = Array.isArray(script?.storyboard) ? script.storyboard : [];
 
-  // Re-sync the editor text when a new script arrives (e.g. re-running the
-  // script step after Back), without the cascading-render effect pattern —
-  // this is React's documented "adjust state during render" approach.
+  // Local text state per scene so typing doesn't get clobbered by a
+  // same-render onChange round-trip — committed to the parent's script on
+  // every keystroke, but the textarea itself reads from this map. The cap
+  // is the length of n8n's original voiceover line — fixed at that point
+  // even if the user clears the field and retypes shorter/longer drafts.
+  const [drafts, setDrafts] = useState(() =>
+    Object.fromEntries(storyboard.map((s) => [s.scene_chunk_id, s.voiceover_audio_script ?? ""]))
+  );
+  const [maxCharsBySceneId, setMaxCharsBySceneId] = useState(() =>
+    Object.fromEntries(storyboard.map((s) => [s.scene_chunk_id, (s.voiceover_audio_script ?? "").length]))
+  );
   const [syncedScript, setSyncedScript] = useState(script);
   if (script !== syncedScript) {
     setSyncedScript(script);
-    setText(JSON.stringify(script ?? {}, null, 2));
+    setDrafts(Object.fromEntries(storyboard.map((s) => [s.scene_chunk_id, s.voiceover_audio_script ?? ""])));
+    setMaxCharsBySceneId(
+      Object.fromEntries(storyboard.map((s) => [s.scene_chunk_id, (s.voiceover_audio_script ?? "").length]))
+    );
   }
 
-  const handleTextChange = (value) => {
-    setText(value);
-    try {
-      const parsed = JSON.parse(value);
-      setParseError(null);
-      onChange?.(parsed);
-    } catch (err) {
-      setParseError("Invalid JSON — fix it before generating.");
-    }
+  const handleVoiceoverChange = (sceneId, value, maxChars) => {
+    const clamped = maxChars != null ? value.slice(0, maxChars) : value;
+    setDrafts((prev) => ({ ...prev, [sceneId]: clamped }));
+    onChange?.(updateVoiceover(script, sceneId, clamped));
   };
 
   return (
@@ -84,20 +101,42 @@ export function ModelTourFinalize({ images = [], selectedAvatars = [], script, o
         )}
       </Section>
 
-      <Section icon={FileJson} title="Script">
-        <p className="text-xs text-neutral-400 -mt-1">
-          Generated from your inputs. Edit any field below before generating — it&apos;s sent back exactly as written.
-        </p>
-        <Textarea
-          value={text}
-          onChange={(e) => handleTextChange(e.target.value)}
-          spellCheck={false}
-          className="font-mono text-xs min-h-80 resize-y bg-card/50"
-        />
-        {parseError && (
-          <p className="text-xs text-red-500 flex items-center gap-1.5">
-            <AlertTriangle className="w-3.5 h-3.5" /> {parseError}
-          </p>
+      <Section icon={Clapperboard} title="Script">
+        {storyboard.length === 0 ? (
+          <p className="text-xs text-neutral-400">No script scenes returned.</p>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {storyboard.map((scene) => {
+              const maxChars = maxCharsBySceneId[scene.scene_chunk_id] ?? null;
+              const length = (drafts[scene.scene_chunk_id] ?? "").length;
+              const nearLimit = maxChars != null && length >= maxChars * 0.9;
+              return (
+                <div
+                  key={scene.scene_chunk_id}
+                  className="rounded-xl border border-border/50 bg-card/50 p-3 space-y-2 flex flex-col"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-neutral-900">Scene {scene.scene_chunk_id}</span>
+                    {scene.duration_seconds != null && (
+                      <span className="text-[10px] text-neutral-400">{scene.duration_seconds}s</span>
+                    )}
+                  </div>
+                  <Textarea
+                    value={drafts[scene.scene_chunk_id] ?? ""}
+                    onChange={(e) => handleVoiceoverChange(scene.scene_chunk_id, e.target.value, maxChars)}
+                    maxLength={maxChars ?? undefined}
+                    spellCheck={false}
+                    className="text-xs min-h-28 resize-y bg-background flex-1"
+                  />
+                  {maxChars != null && (
+                    <span className={`text-[10px] self-end ${nearLimit ? "text-amber-500" : "text-neutral-400"}`}>
+                      {length} / {maxChars}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         )}
       </Section>
 
@@ -108,8 +147,7 @@ export function ModelTourFinalize({ images = [], selectedAvatars = [], script, o
 
         <Button
           onClick={onGenerate}
-          disabled={!!parseError}
-          className="bg-neutral-900 text-[#c7f038] hover:opacity-90 hover:bg-neutral-900 shadow-lg gap-2 px-6 disabled:opacity-50"
+          className="bg-neutral-900 text-[#c7f038] hover:opacity-90 hover:bg-neutral-900 shadow-lg gap-2 px-6"
         >
           Generate Video
           <ChevronRight className="w-4 h-4" />
