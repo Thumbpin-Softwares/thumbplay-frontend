@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { ChevronDown, FileText } from "lucide-react";
+import { ChevronDown, FileText, Wand2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -36,15 +36,23 @@ const GLOBAL_REQUIRED = ["propertyClassification", "projectName", "projectType",
 // Landmarks, Connectivity, Vibe, and Language are global (every property
 // type needs them, not just Residential). Plotted only requires Carpet Area
 // beyond the global set; Commercial additionally requires Shop Type + Shop
-// Built-up Area; Residential also requires Carpet Area.
+// Built-up Area; Residential also requires Carpet Area + Amenities.
 export function isSiteFormValid(values = {}) {
   const filled = (key) => !!values[key]?.toString().trim();
+
+  if (values.scriptMode === "manual") {
+    return filled("propertyClassification") && filled("manualScript");
+  }
+
   if (!GLOBAL_REQUIRED.every(filled)) return false;
 
   if (values.propertyClassification === "commercial") {
     return filled("shopType") && filled("shopBuiltUpArea");
   }
-  if (values.propertyClassification === "residential" || values.propertyClassification === "plotted") {
+  if (values.propertyClassification === "residential") {
+    return filled("carpetArea") && filled("amenities");
+  }
+  if (values.propertyClassification === "plotted") {
     return filled("carpetArea");
   }
   return false;
@@ -78,6 +86,21 @@ const LANGUAGES = [
   { id: "hinglish", label: "Hinglish" },
 ];
 
+const VIBE_OPTIONS = [
+  "Calm",
+  "Energetic",
+  "Cinematic",
+  "Warm",
+  "Bold",
+  "Minimal",
+  "Playful",
+  "Elegant",
+  "Dramatic",
+  "Serene",
+  "Vibrant",
+  "Sophisticated",
+];
+
 function FieldLabel({ children, required }) {
   return (
     <Label className="text-xs text-neutral-700">
@@ -103,20 +126,20 @@ function TextField({ label, field, values, setField, required, placeholder, hint
   );
 }
 
-// Tonality allows picking several descriptors at once — stored as the same
-// kind of comma-joined string a free-text tonality field would produce, so
-// downstream consumers (modelTourScriptRequest, isSiteFormValid) don't need
-// to know it's backed by a multi-select.
-function TonalityField({ values, setField, required }) {
-  const selected = (values.tonality || "").split(",").map((s) => s.trim()).filter(Boolean);
+// Allows picking several descriptors at once — stored as the same kind of
+// comma-joined string a free-text field would produce, so downstream
+// consumers (modelTourScriptRequest, isSiteFormValid) don't need to know
+// it's backed by a multi-select. Shared by Tonality and Vibe.
+function MultiSelectField({ label, field, options, values, setField, required, placeholder, hint }) {
+  const selected = (values[field] || "").split(",").map((s) => s.trim()).filter(Boolean);
   const toggle = (opt) => {
     const next = selected.includes(opt) ? selected.filter((s) => s !== opt) : [...selected, opt];
-    setField("tonality", next.join(", "));
+    setField(field, next.join(", "));
   };
 
   return (
     <div className="space-y-1.5">
-      <FieldLabel required={required}>Tonality</FieldLabel>
+      <FieldLabel required={required}>{label}</FieldLabel>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
@@ -124,13 +147,13 @@ function TonalityField({ values, setField, required }) {
             className="flex w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm text-left"
           >
             <span className={selected.length ? "" : "text-muted-foreground"}>
-              {selected.length ? selected.join(", ") : "Select tonality"}
+              {selected.length ? selected.join(", ") : placeholder}
             </span>
             <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-56">
-          {TONALITY_OPTIONS.map((opt) => (
+          {options.map((opt) => (
             <DropdownMenuCheckboxItem
               key={opt}
               checked={selected.includes(opt)}
@@ -142,7 +165,7 @@ function TonalityField({ values, setField, required }) {
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-      <p className="text-[11px] text-neutral-400">Guides the AI's tone for the generated script</p>
+      {hint && <p className="text-[11px] text-neutral-400">{hint}</p>}
     </div>
   );
 }
@@ -158,6 +181,7 @@ function TonalityField({ values, setField, required }) {
 export function SiteForm({ values = {}, onChange }) {
   const setField = (key, val) => onChange?.({ ...values, [key]: val });
   const classification = values.propertyClassification;
+  const scriptMode = values.scriptMode || "ai";
 
   // Defaults to Residential so the user isn't forced to make a choice
   // before doing anything else. Only fires once on mount and only if
@@ -202,6 +226,48 @@ export function SiteForm({ values = {}, onChange }) {
           </div>
         </div>
 
+        <div className="space-y-1.5">
+          <FieldLabel required>Script</FieldLabel>
+          <div className="inline-flex rounded-lg border border-border/60 bg-neutral-100 p-1">
+            <button
+              type="button"
+              onClick={() => setField("scriptMode", "ai")}
+              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                scriptMode === "ai" ? "bg-neutral-900 text-[#c7f038]" : "text-muted-foreground hover:text-neutral-700"
+              }`}
+            >
+              <Wand2 className="w-3.5 h-3.5" />
+              Generate with AI
+            </button>
+            <button
+              type="button"
+              onClick={() => setField("scriptMode", "manual")}
+              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                scriptMode === "manual" ? "bg-neutral-900 text-[#c7f038]" : "text-muted-foreground hover:text-neutral-700"
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              Manual Script
+            </button>
+          </div>
+        </div>
+
+        {scriptMode === "manual" && (
+          <TextField
+            label="Property Script"
+            field="manualScript"
+            values={values}
+            setField={setField}
+            required
+            textarea
+            placeholder="Write or paste the full script for this property..."
+          />
+        )}
+      </div>
+
+      {scriptMode === "ai" && (
+      <>
+      <div className="space-y-4">
         <div className="grid sm:grid-cols-2 gap-4">
           <TextField label="Project Name" field="projectName" values={values} setField={setField} required />
 
@@ -233,7 +299,16 @@ export function SiteForm({ values = {}, onChange }) {
           <TextField label="Location" field="location" values={values} setField={setField} required />
         </div>
 
-        <TonalityField values={values} setField={setField} required />
+        <MultiSelectField
+          label="Tonality"
+          field="tonality"
+          options={TONALITY_OPTIONS}
+          values={values}
+          setField={setField}
+          required
+          placeholder="Select tonality"
+          hint="Guides the AI's tone for the generated script"
+        />
 
         <div className="grid sm:grid-cols-2 gap-4">
           <TextField label="Landmarks" field="landmarks" values={values} setField={setField} required />
@@ -256,13 +331,14 @@ export function SiteForm({ values = {}, onChange }) {
               </SelectContent>
             </Select>
           </div>
-          <TextField
+          <MultiSelectField
             label="Vibe"
             field="vibe"
+            options={VIBE_OPTIONS}
             values={values}
             setField={setField}
             required
-            placeholder="e.g., calm, energetic, cinematic"
+            placeholder="Select vibe"
             hint="Guides the video's visual mood"
           />
         </div>
@@ -294,15 +370,7 @@ export function SiteForm({ values = {}, onChange }) {
             required
             placeholder="e.g., 1200 sqft, 3600 sqft"
           />
-          <TextField label="Amenities" field="amenities" values={values} setField={setField} textarea />
-          <TextField
-            label="Features"
-            field="features"
-            values={values}
-            setField={setField}
-            textarea
-            hint="Focus on nearby developments"
-          />
+          <TextField label="Amenities" field="amenities" values={values} setField={setField} required textarea />
         </div>
       )}
 
@@ -328,8 +396,9 @@ export function SiteForm({ values = {}, onChange }) {
             <TextField label="Nearby Settlements" field="nearbySettlements" values={values} setField={setField} />
           </div>
           <TextField label="Amenities" field="amenities" values={values} setField={setField} textarea />
-          <TextField label="Features" field="features" values={values} setField={setField} textarea />
         </div>
+      )}
+      </>
       )}
     </div>
   );
