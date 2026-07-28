@@ -77,6 +77,17 @@ const PROJECT_TYPES = [
   { id: "ultra-luxury", label: "Ultra Luxury" },
 ];
 
+// Commercial doesn't fit the residential Affordable/Luxury/Ultra Luxury
+// tiering — it's categorized by the kind of space instead.
+const COMMERCIAL_PROJECT_TYPES = [
+  { id: "it-parks-corporate-towers", label: "IT Parks & Corporate Towers" },
+  { id: "co-working-spaces", label: "Co-working Spaces" },
+  { id: "business-centers", label: "Business Centers" },
+  { id: "high-street-outlets", label: "High-Street Outlets" },
+  { id: "shopping-malls", label: "Shopping Malls" },
+  { id: "hospitality-spaces", label: "Hospitality Spaces" },
+];
+
 // Same language set as the shared SpeakerLanguage picker (used elsewhere as
 // a button group) — kept identical so "english"/"hindi"/"hinglish" values
 // stay consistent across the app regardless of which control renders them.
@@ -182,6 +193,7 @@ export function SiteForm({ values = {}, onChange }) {
   const setField = (key, val) => onChange?.({ ...values, [key]: val });
   const classification = values.propertyClassification;
   const scriptMode = values.scriptMode || "ai";
+  const projectTypeOptions = classification === "commercial" ? COMMERCIAL_PROJECT_TYPES : PROJECT_TYPES;
 
   // Defaults to Residential so the user isn't forced to make a choice
   // before doing anything else. Only fires once on mount and only if
@@ -190,6 +202,16 @@ export function SiteForm({ values = {}, onChange }) {
     if (!classification) setField("propertyClassification", "residential");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Affordable/Luxury/Ultra Luxury and the Commercial space types are
+  // disjoint id sets, so a project type picked before switching
+  // classification would otherwise linger as an invalid, unlabeled value.
+  useEffect(() => {
+    if (values.projectType && !projectTypeOptions.some((t) => t.id === values.projectType)) {
+      setField("projectType", "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [classification]);
 
   return (
     <div className="space-y-5">
@@ -278,7 +300,7 @@ export function SiteForm({ values = {}, onChange }) {
                 <SelectValue placeholder="Select project type" />
               </SelectTrigger>
               <SelectContent>
-                {PROJECT_TYPES.map((t) => (
+                {projectTypeOptions.map((t) => (
                   <SelectItem key={t.id} value={t.id}>
                     {t.label}
                   </SelectItem>
