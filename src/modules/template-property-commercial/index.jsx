@@ -239,7 +239,25 @@ export default function PropertyCommercialRunner({ template }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Script generation failed");
-      setModelTourScript(data.script);
+
+      // The n8n call behind this can run past Vercel's ~60s edge-response
+      // timeout, so /model-tour/script only starts the job (202 + jobId) —
+      // poll the same job endpoint /generate already uses until it's done.
+      const { jobId } = data;
+      let script = null;
+      while (true) {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        const jobRes = await fetch(`/api/model-tour/jobs/${jobId}`);
+        if (!jobRes.ok) throw new Error(`Lost track of the script job: ${jobRes.status}`);
+        const { job } = await jobRes.json();
+        if (job.status === "done") {
+          script = job.result;
+          break;
+        }
+        if (job.status === "error") throw new Error(job.error || "Script generation failed");
+      }
+
+      setModelTourScript(script);
       setStep(2);
     } catch (err) {
       toast.error("Script generation failed", { description: err.message });
