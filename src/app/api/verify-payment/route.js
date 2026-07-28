@@ -4,8 +4,8 @@ import { NextResponse } from "next/server";
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
 const AUTH_COOKIE_NAME = "auth_token";
 
-// Proxy endpoint: forwards the same-origin `auth_token` cookie from Next.js to
-// the Express backend's POST /api/v1/payments/create-order.
+// Proxy endpoint: forwards client payment verification requests to Express backend
+// POST /api/v1/payments/verify with the auth_token cookie.
 export async function POST(request) {
   try {
     const cookieStore = await cookies();
@@ -17,7 +17,7 @@ export async function POST(request) {
 
     const body = await request.text();
 
-    const backendRes = await fetch(`${BACKEND_URL}/api/v1/payments/create-order`, {
+    const backendRes = await fetch(`${BACKEND_URL}/api/v1/payments/verify`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -30,9 +30,9 @@ export async function POST(request) {
     const data = await backendRes.json().catch(() => ({}));
     return NextResponse.json(data, { status: backendRes.status });
   } catch (error) {
-    console.error("Create order proxy error:", error);
+    console.error("Verify payment proxy error:", error);
     return NextResponse.json(
-      { error: "Failed to create order" },
+      { error: "Failed to verify payment" },
       { status: 500 }
     );
   }
