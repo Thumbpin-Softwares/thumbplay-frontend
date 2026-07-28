@@ -69,15 +69,30 @@ const POSITIONS = [
   { value: "bottom", label: "Bottom" },
 ];
 
-export function CaptionsPanel({ captionState, onGenerate, onReset, onDraftChange, reelDurationSeconds = 0 }) {
+// mode "apply" (default) fires onGenerate immediately and tracks progress via
+// captionState, same as the main Editor — captions are rendered right away.
+// mode "select" is for flows (like the model-tour Captions & Logo step) where
+// the base video may not exist yet: onGenerate just records the user's choice
+// for the caller to apply later, so there's no busy/progress state to show
+// here and `selectedPresetId` (not captionState) drives the checkmark.
+export function CaptionsPanel({
+  captionState,
+  onGenerate,
+  onReset,
+  onDraftChange,
+  reelDurationSeconds = 0,
+  mode = "apply",
+  selectedPresetId = null,
+  actionLabel = "Add caption",
+}) {
   const [view, setView] = useState("grid");
   const [selected, setSelected] = useState(null);
   const [language, setLanguage] = useState("");
   const [translateTo, setTranslateTo] = useState("en-US");
   const [position, setPosition] = useState("bottom");
 
-  const busy = captionState?.status === "rendering" || captionState?.status === "captioning";
-  const appliedPreset = captionState?.status === "done" ? captionState.preset : null;
+  const busy = mode === "apply" && (captionState?.status === "rendering" || captionState?.status === "captioning");
+  const appliedPreset = mode === "select" ? selectedPresetId : captionState?.status === "done" ? captionState.preset : null;
 
   const openPreset = (preset) => {
     setSelected(preset);
@@ -99,7 +114,10 @@ export function CaptionsPanel({ captionState, onGenerate, onReset, onDraftChange
   };
 
   if (view === "detail" && selected) {
-    const isAppliedHere = captionState?.status === "done" && captionState.preset === selected.id;
+    const isAppliedHere =
+      mode === "select"
+        ? selectedPresetId === selected.id
+        : captionState?.status === "done" && captionState.preset === selected.id;
     const { credits: estimatedCredits } = computeCaptionCreditCost({
       durationSeconds: reelDurationSeconds,
       isDynamicPreset: selected.tier === "dynamic",
@@ -178,7 +196,7 @@ export function CaptionsPanel({ captionState, onGenerate, onReset, onDraftChange
           ) : (
             <>
               <Sparkles className="w-3.5 h-3.5" />
-              Add caption · {estimatedCredits} credit{estimatedCredits === 1 ? "" : "s"}
+              {actionLabel} · {estimatedCredits} credit{estimatedCredits === 1 ? "" : "s"}
             </>
           )}
         </button>
@@ -192,7 +210,7 @@ export function CaptionsPanel({ captionState, onGenerate, onReset, onDraftChange
           </div>
         )}
 
-        {captionState?.status === "error" && (
+        {mode === "apply" && captionState?.status === "error" && (
           <p className="text-xs text-destructive">{captionState.error}</p>
         )}
 
@@ -200,7 +218,7 @@ export function CaptionsPanel({ captionState, onGenerate, onReset, onDraftChange
           <div className="flex items-center justify-between rounded-xl border border-border/50 px-3 py-2">
             <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-600">
               <Check className="w-3.5 h-3.5" />
-              Added to timeline
+              {mode === "select" ? "Selected" : "Added to timeline"}
             </span>
             <button onClick={onReset} className="text-xs text-muted-foreground hover:text-foreground">
               Remove

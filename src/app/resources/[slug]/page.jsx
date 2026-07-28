@@ -15,7 +15,7 @@ export async function generateMetadata({ params }) {
   if (!post) return {};
 
   return {
-    title: `${post.title} — Thumbplay.ai`,
+    title: `${post.title}`,
     description: post.excerpt,
   };
 }

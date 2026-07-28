@@ -21,7 +21,7 @@ export function StepScript({
   continueLabel = "Continue to Finalize",
   loadingLabel = "Generating...",
 }) {
-  const valid = isValid ?? (isSiteFormValid(values) && !!values.language);
+  const valid = isValid ?? (isSiteFormValid(values) && (values.scriptMode === "manual" || !!values.language));
 
   return (
     <div className="space-y-5 animate-fade-in">

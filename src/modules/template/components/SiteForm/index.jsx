@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { FileText } from "lucide-react";
+import { ChevronDown, FileText, Wand2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,40 +13,93 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-// Commercial/Plotted are temporarily disabled — only Residential is wired
-// to a working generation flow (omni-hometour-pipeline) right now; the
-// generic-pipeline flow behind Commercial/Plotted is being reworked.
+// All three route through the n8n model-tour pipeline now (it switches its
+// master prompt internally based on `type`). "Land" is shown to the user in
+// place of "Plotted" — the value sent as `type` is still "plotted", n8n's
+// switch doesn't change.
 const CLASSIFICATIONS = [
-  { id: "commercial", label: "Commercial", disabled: true },
+  { id: "commercial", label: "Commercial" },
   { id: "residential", label: "Residential" },
-  { id: "plotted", label: "Plotted", disabled: true },
+  { id: "plotted", label: "Land" },
 ];
 
-const GLOBAL_REQUIRED = ["propertyClassification", "projectName", "projectType", "projectArea", "location", "tonality", "language"];
+const GLOBAL_REQUIRED = ["propertyClassification", "projectName", "projectType", "projectArea", "location", "tonality", "landmarks", "connectivity", "vibe", "language"];
 
-// Checks the fields required for the current classification. Language/Vibe
-// are global (every property type needs them, not just Residential).
-// Plotted only requires Carpet Area beyond the global set; Commercial
-// additionally requires Shop Type + Shop Built-up Area; Residential also
-// requires Carpet Area.
+// Checks the fields required for the current classification. Tonality,
+// Landmarks, Connectivity, Vibe, and Language are global (every property
+// type needs them, not just Residential). Plotted only requires Carpet Area
+// beyond the global set; Commercial additionally requires Shop Type + Shop
+// Built-up Area; Residential also requires Carpet Area + Amenities.
 export function isSiteFormValid(values = {}) {
   const filled = (key) => !!values[key]?.toString().trim();
+
+  if (values.scriptMode === "manual") {
+    return (
+      filled("propertyClassification") &&
+      filled("projectName") &&
+      filled("projectType") &&
+      filled("language") &&
+      filled("manualScript")
+    );
+  }
+
   if (!GLOBAL_REQUIRED.every(filled)) return false;
 
   if (values.propertyClassification === "commercial") {
     return filled("shopType") && filled("shopBuiltUpArea");
   }
-  if (values.propertyClassification === "residential" || values.propertyClassification === "plotted") {
+  if (values.propertyClassification === "residential") {
+    return filled("carpetArea") && filled("amenities");
+  }
+  if (values.propertyClassification === "plotted") {
     return filled("carpetArea");
   }
   return false;
 }
 
+const TONALITY_OPTIONS = [
+  "Aspirational",
+  "Premium",
+  "Warm & Inviting",
+  "Luxurious",
+  "Energetic",
+  "Sophisticated",
+  "Friendly",
+  "Elegant",
+  "Modern",
+  "Trustworthy",
+];
+
 const PROJECT_TYPES = [
   { id: "affordable", label: "Affordable" },
   { id: "luxury", label: "Luxury" },
   { id: "ultra-luxury", label: "Ultra Luxury" },
+];
+
+// Commercial doesn't fit the residential Affordable/Luxury/Ultra Luxury
+// tiering — it's categorized by the kind of space instead.
+const COMMERCIAL_PROJECT_TYPES = [
+  { id: "it-parks-corporate-towers", label: "IT Parks & Corporate Towers" },
+  { id: "co-working-spaces", label: "Co-working Spaces" },
+  { id: "business-centers", label: "Business Centers" },
+  { id: "high-street-outlets", label: "High-Street Outlets" },
+  { id: "shopping-malls", label: "Shopping Malls" },
+  { id: "hospitality-spaces", label: "Hospitality Spaces" },
+];
+
+// Land ("plotted") is categorized by land use, not price tier or space kind.
+const LAND_PROJECT_TYPES = [
+  { id: "plots", label: "Plots" },
+  { id: "farmhouse", label: "Farmhouse" },
+  { id: "agricultural-land", label: "Agricultural Land" },
+  { id: "industrial-plots", label: "Industrial Plots" },
 ];
 
 // Same language set as the shared SpeakerLanguage picker (used elsewhere as
@@ -56,6 +109,21 @@ const LANGUAGES = [
   { id: "english", label: "English" },
   { id: "hindi", label: "Hindi" },
   { id: "hinglish", label: "Hinglish" },
+];
+
+const VIBE_OPTIONS = [
+  "Calm",
+  "Energetic",
+  "Cinematic",
+  "Warm",
+  "Bold",
+  "Minimal",
+  "Playful",
+  "Elegant",
+  "Dramatic",
+  "Serene",
+  "Vibrant",
+  "Sophisticated",
 ];
 
 function FieldLabel({ children, required }) {
@@ -83,6 +151,50 @@ function TextField({ label, field, values, setField, required, placeholder, hint
   );
 }
 
+// Allows picking several descriptors at once — stored as the same kind of
+// comma-joined string a free-text field would produce, so downstream
+// consumers (modelTourScriptRequest, isSiteFormValid) don't need to know
+// it's backed by a multi-select. Shared by Tonality and Vibe.
+function MultiSelectField({ label, field, options, values, setField, required, placeholder, hint }) {
+  const selected = (values[field] || "").split(",").map((s) => s.trim()).filter(Boolean);
+  const toggle = (opt) => {
+    const next = selected.includes(opt) ? selected.filter((s) => s !== opt) : [...selected, opt];
+    setField(field, next.join(", "));
+  };
+
+  return (
+    <div className="space-y-1.5">
+      <FieldLabel required={required}>{label}</FieldLabel>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className="flex w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm text-left"
+          >
+            <span className={selected.length ? "" : "text-muted-foreground"}>
+              {selected.length ? selected.join(", ") : placeholder}
+            </span>
+            <ChevronDown className="h-4 w-4 opacity-50 shrink-0" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-56">
+          {options.map((opt) => (
+            <DropdownMenuCheckboxItem
+              key={opt}
+              checked={selected.includes(opt)}
+              onSelect={(e) => e.preventDefault()}
+              onCheckedChange={() => toggle(opt)}
+            >
+              {opt}
+            </DropdownMenuCheckboxItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      {hint && <p className="text-[11px] text-neutral-400">{hint}</p>}
+    </div>
+  );
+}
+
 // Shared "Script" step form — collects the details used to generate the
 // script/voice for a template's pipeline. Shared across all templates;
 // which fields render depends on Property Classification, but the form
@@ -94,16 +206,34 @@ function TextField({ label, field, values, setField, required, placeholder, hint
 export function SiteForm({ values = {}, onChange }) {
   const setField = (key, val) => onChange?.({ ...values, [key]: val });
   const classification = values.propertyClassification;
+  const scriptMode = values.scriptMode || "ai";
+  const projectTypeOptions =
+    classification === "commercial"
+      ? COMMERCIAL_PROJECT_TYPES
+      : classification === "plotted"
+        ? LAND_PROJECT_TYPES
+        : PROJECT_TYPES;
 
-  // Residential is the only selectable classification while Commercial/
-  // Plotted are disabled, so default to it rather than making the user
-  // click the one enabled option every time. Only fires once on mount and
-  // only if nothing's set yet, so a session-restored classification (or a
-  // future re-enabled Commercial/Plotted default) isn't clobbered.
+  // Defaults to Residential so the user isn't forced to make a choice
+  // before doing anything else. Only fires once on mount and only if
+  // nothing's set yet, so a session-restored classification isn't clobbered.
   useEffect(() => {
     if (!classification) setField("propertyClassification", "residential");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Stored as the option's label (not its id) — sent to n8n as `tier_class`,
+  // and a plain label like "Shopping Malls" is far easier for the LLM
+  // prompt to read than a slug like "shopping-malls". Affordable/Luxury/
+  // Ultra Luxury and the Commercial space types are disjoint sets, so a
+  // project type picked before switching classification would otherwise
+  // linger as a stale, mismatched value.
+  useEffect(() => {
+    if (values.projectType && !projectTypeOptions.some((t) => t.label === values.projectType)) {
+      setField("projectType", "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [classification]);
 
   return (
     <div className="space-y-5">
@@ -140,9 +270,87 @@ export function SiteForm({ values = {}, onChange }) {
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <TextField label="Project Name" field="projectName" values={values} setField={setField} required />
+        <TextField label="Project Name" field="projectName" values={values} setField={setField} required />
 
+        <div className="space-y-1.5">
+          <FieldLabel required>Script</FieldLabel>
+          <div className="inline-flex rounded-lg border border-border/60 bg-neutral-100 p-1">
+            <button
+              type="button"
+              onClick={() => setField("scriptMode", "ai")}
+              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                scriptMode === "ai" ? "bg-neutral-900 text-[#c7f038]" : "text-muted-foreground hover:text-neutral-700"
+              }`}
+            >
+              <Wand2 className="w-3.5 h-3.5" />
+              Generate with AI
+            </button>
+            <button
+              type="button"
+              onClick={() => setField("scriptMode", "manual")}
+              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                scriptMode === "manual" ? "bg-neutral-900 text-[#c7f038]" : "text-muted-foreground hover:text-neutral-700"
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              Manual Script
+            </button>
+          </div>
+        </div>
+
+        {scriptMode === "manual" && (
+          <div className="space-y-4">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <FieldLabel required>Project Type</FieldLabel>
+                <Select value={values.projectType || ""} onValueChange={(v) => setField("projectType", v)}>
+                  <SelectTrigger className="w-full text-sm">
+                    <SelectValue placeholder="Select project type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projectTypeOptions.map((t) => (
+                      <SelectItem key={t.id} value={t.label}>
+                        {t.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <FieldLabel required>Language</FieldLabel>
+                <Select value={values.language || ""} onValueChange={(v) => setField("language", v)}>
+                  <SelectTrigger className="w-full text-sm">
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANGUAGES.map((l) => (
+                      <SelectItem key={l.id} value={l.id}>
+                        {l.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <TextField
+              label="Property Script"
+              field="manualScript"
+              values={values}
+              setField={setField}
+              required
+              textarea
+              placeholder="Write or paste the full script for this property..."
+            />
+          </div>
+        )}
+      </div>
+
+      {scriptMode === "ai" && (
+      <>
+      <div className="space-y-4">
+        <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <FieldLabel required>Project Type</FieldLabel>
             <Select value={values.projectType || ""} onValueChange={(v) => setField("projectType", v)}>
@@ -150,8 +358,8 @@ export function SiteForm({ values = {}, onChange }) {
                 <SelectValue placeholder="Select project type" />
               </SelectTrigger>
               <SelectContent>
-                {PROJECT_TYPES.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
+                {projectTypeOptions.map((t) => (
+                  <SelectItem key={t.id} value={t.label}>
                     {t.label}
                   </SelectItem>
                 ))}
@@ -171,20 +379,20 @@ export function SiteForm({ values = {}, onChange }) {
           <TextField label="Location" field="location" values={values} setField={setField} required />
         </div>
 
-        <TextField
+        <MultiSelectField
           label="Tonality"
           field="tonality"
+          options={TONALITY_OPTIONS}
           values={values}
           setField={setField}
           required
-          placeholder="e.g., Aspirational, premium, warm & inviting"
+          placeholder="Select tonality"
           hint="Guides the AI's tone for the generated script"
-          textarea
         />
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <TextField label="Landmarks" field="landmarks" values={values} setField={setField} />
-          <TextField label="Connectivity" field="connectivity" values={values} setField={setField} />
+          <TextField label="Landmarks" field="landmarks" values={values} setField={setField} required />
+          <TextField label="Connectivity" field="connectivity" values={values} setField={setField} required />
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
@@ -203,12 +411,14 @@ export function SiteForm({ values = {}, onChange }) {
               </SelectContent>
             </Select>
           </div>
-          <TextField
+          <MultiSelectField
             label="Vibe"
             field="vibe"
+            options={VIBE_OPTIONS}
             values={values}
             setField={setField}
-            placeholder="e.g., calm, energetic, cinematic"
+            required
+            placeholder="Select vibe"
             hint="Guides the video's visual mood"
           />
         </div>
@@ -240,15 +450,7 @@ export function SiteForm({ values = {}, onChange }) {
             required
             placeholder="e.g., 1200 sqft, 3600 sqft"
           />
-          <TextField label="Amenities" field="amenities" values={values} setField={setField} textarea />
-          <TextField
-            label="Features"
-            field="features"
-            values={values}
-            setField={setField}
-            textarea
-            hint="Focus on nearby developments"
-          />
+          <TextField label="Amenities" field="amenities" values={values} setField={setField} required textarea />
         </div>
       )}
 
@@ -274,8 +476,9 @@ export function SiteForm({ values = {}, onChange }) {
             <TextField label="Nearby Settlements" field="nearbySettlements" values={values} setField={setField} />
           </div>
           <TextField label="Amenities" field="amenities" values={values} setField={setField} textarea />
-          <TextField label="Features" field="features" values={values} setField={setField} textarea />
         </div>
+      )}
+      </>
       )}
     </div>
   );
