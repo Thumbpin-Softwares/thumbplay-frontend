@@ -197,20 +197,37 @@ export default function PropertyCommercialRunner({ template }) {
     .filter(Boolean)
     .join("; ");
 
-  const modelTourScriptRequest = {
-    propertyName: scriptValues.projectName || "",
-    type: scriptValues.propertyClassification || undefined,
-    locationLandmarks: scriptValues.landmarks || "",
-    connectivity: scriptValues.connectivity || "",
-    language: scriptValues.language || "",
-    tierClass: scriptValues.projectType || "",
-    carpetArea: (isCommercial ? scriptValues.shopBuiltUpArea : scriptValues.carpetArea) || "",
-    amenities: (isCommercial ? commercialDetails : scriptValues.amenities) || "",
-    tonality: scriptValues.tonality || "",
-    vibe: scriptValues.vibe || "",
-    avatarImageUrls: avatarHook.selectedAvatars.map((a) => a.url).slice(0, 4),
-    propertyImageUrls: uploadedImages.map((img) => img.r2Url).slice(0, 4),
-  };
+  // Manual mode: the user already wrote the final voiceover text, so the
+  // AI-guidance-only fields (landmarks/connectivity/carpetArea/amenities/
+  // tonality/vibe) are meaningless — send just what's still needed to
+  // actually render the video (images, name, type/language/tierClass) plus
+  // the raw script text, instead of the full AI-mode field set.
+  const isManualScript = scriptValues.scriptMode === "manual";
+
+  const modelTourScriptRequest = isManualScript
+    ? {
+        propertyName: scriptValues.projectName || "",
+        type: scriptValues.propertyClassification || undefined,
+        language: scriptValues.language || "",
+        tierClass: scriptValues.projectType || "",
+        script: scriptValues.manualScript || "",
+        avatarImageUrls: avatarHook.selectedAvatars.map((a) => a.url).slice(0, 4),
+        propertyImageUrls: uploadedImages.map((img) => img.r2Url).slice(0, 4),
+      }
+    : {
+        propertyName: scriptValues.projectName || "",
+        type: scriptValues.propertyClassification || undefined,
+        locationLandmarks: scriptValues.landmarks || "",
+        connectivity: scriptValues.connectivity || "",
+        language: scriptValues.language || "",
+        tierClass: scriptValues.projectType || "",
+        carpetArea: (isCommercial ? scriptValues.shopBuiltUpArea : scriptValues.carpetArea) || "",
+        amenities: (isCommercial ? commercialDetails : scriptValues.amenities) || "",
+        tonality: scriptValues.tonality || "",
+        vibe: scriptValues.vibe || "",
+        avatarImageUrls: avatarHook.selectedAvatars.map((a) => a.url).slice(0, 4),
+        propertyImageUrls: uploadedImages.map((img) => img.r2Url).slice(0, 4),
+      };
 
   const handleGenerateModelTourScript = async () => {
     setGeneratingModelTourScript(true);
@@ -222,7 +239,25 @@ export default function PropertyCommercialRunner({ template }) {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Script generation failed");
-      setModelTourScript(data.script);
+
+      // The n8n call behind this can run past Vercel's ~60s edge-response
+      // timeout, so /model-tour/script only starts the job (202 + jobId) —
+      // poll the same job endpoint /generate already uses until it's done.
+      const { jobId } = data;
+      let script = null;
+      while (true) {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        const jobRes = await fetch(`/api/model-tour/jobs/${jobId}`);
+        if (!jobRes.ok) throw new Error(`Lost track of the script job: ${jobRes.status}`);
+        const { job } = await jobRes.json();
+        if (job.status === "done") {
+          script = job.result;
+          break;
+        }
+        if (job.status === "error") throw new Error(job.error || "Script generation failed");
+      }
+
+      setModelTourScript(script);
       setStep(2);
     } catch (err) {
       toast.error("Script generation failed", { description: err.message });

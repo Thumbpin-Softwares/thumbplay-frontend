@@ -41,7 +41,13 @@ export function isSiteFormValid(values = {}) {
   const filled = (key) => !!values[key]?.toString().trim();
 
   if (values.scriptMode === "manual") {
-    return filled("propertyClassification") && filled("manualScript");
+    return (
+      filled("propertyClassification") &&
+      filled("projectName") &&
+      filled("projectType") &&
+      filled("language") &&
+      filled("manualScript")
+    );
   }
 
   if (!GLOBAL_REQUIRED.every(filled)) return false;
@@ -86,6 +92,14 @@ const COMMERCIAL_PROJECT_TYPES = [
   { id: "high-street-outlets", label: "High-Street Outlets" },
   { id: "shopping-malls", label: "Shopping Malls" },
   { id: "hospitality-spaces", label: "Hospitality Spaces" },
+];
+
+// Land ("plotted") is categorized by land use, not price tier or space kind.
+const LAND_PROJECT_TYPES = [
+  { id: "plots", label: "Plots" },
+  { id: "farmhouse", label: "Farmhouse" },
+  { id: "agricultural-land", label: "Agricultural Land" },
+  { id: "industrial-plots", label: "Industrial Plots" },
 ];
 
 // Same language set as the shared SpeakerLanguage picker (used elsewhere as
@@ -193,7 +207,12 @@ export function SiteForm({ values = {}, onChange }) {
   const setField = (key, val) => onChange?.({ ...values, [key]: val });
   const classification = values.propertyClassification;
   const scriptMode = values.scriptMode || "ai";
-  const projectTypeOptions = classification === "commercial" ? COMMERCIAL_PROJECT_TYPES : PROJECT_TYPES;
+  const projectTypeOptions =
+    classification === "commercial"
+      ? COMMERCIAL_PROJECT_TYPES
+      : classification === "plotted"
+        ? LAND_PROJECT_TYPES
+        : PROJECT_TYPES;
 
   // Defaults to Residential so the user isn't forced to make a choice
   // before doing anything else. Only fires once on mount and only if
@@ -251,6 +270,8 @@ export function SiteForm({ values = {}, onChange }) {
           </div>
         </div>
 
+        <TextField label="Project Name" field="projectName" values={values} setField={setField} required />
+
         <div className="space-y-1.5">
           <FieldLabel required>Script</FieldLabel>
           <div className="inline-flex rounded-lg border border-border/60 bg-neutral-100 p-1">
@@ -278,15 +299,51 @@ export function SiteForm({ values = {}, onChange }) {
         </div>
 
         {scriptMode === "manual" && (
-          <TextField
-            label="Property Script"
-            field="manualScript"
-            values={values}
-            setField={setField}
-            required
-            textarea
-            placeholder="Write or paste the full script for this property..."
-          />
+          <div className="space-y-4">
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <FieldLabel required>Project Type</FieldLabel>
+                <Select value={values.projectType || ""} onValueChange={(v) => setField("projectType", v)}>
+                  <SelectTrigger className="w-full text-sm">
+                    <SelectValue placeholder="Select project type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {projectTypeOptions.map((t) => (
+                      <SelectItem key={t.id} value={t.label}>
+                        {t.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <FieldLabel required>Language</FieldLabel>
+                <Select value={values.language || ""} onValueChange={(v) => setField("language", v)}>
+                  <SelectTrigger className="w-full text-sm">
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LANGUAGES.map((l) => (
+                      <SelectItem key={l.id} value={l.id}>
+                        {l.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <TextField
+              label="Property Script"
+              field="manualScript"
+              values={values}
+              setField={setField}
+              required
+              textarea
+              placeholder="Write or paste the full script for this property..."
+            />
+          </div>
         )}
       </div>
 
@@ -294,8 +351,6 @@ export function SiteForm({ values = {}, onChange }) {
       <>
       <div className="space-y-4">
         <div className="grid sm:grid-cols-2 gap-4">
-          <TextField label="Project Name" field="projectName" values={values} setField={setField} required />
-
           <div className="space-y-1.5">
             <FieldLabel required>Project Type</FieldLabel>
             <Select value={values.projectType || ""} onValueChange={(v) => setField("projectType", v)}>
