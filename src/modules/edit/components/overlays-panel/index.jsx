@@ -23,6 +23,7 @@ export function OverlaysPanel({
   onToggleHidden,
   onReorder,
   uploading,
+  imageOnly = false,
 }) {
   const fileInputRef = useRef(null);
   const selected = overlays.find((o) => o.id === selectedId) || null;
@@ -60,24 +61,28 @@ export function OverlaysPanel({
   return (
     <div className="flex flex-col gap-4">
       <p className="text-xs text-muted-foreground">
-        Add text or an image, then drag it anywhere on the canvas it stays there for the whole video.
+        {imageOnly
+          ? "Upload your logo, then drag it anywhere on the canvas — it stays there for the whole video."
+          : "Add text or an image, then drag it anywhere on the canvas it stays there for the whole video."}
       </p>
 
-      <div className="grid grid-cols-2 gap-2">
-        <button
-          onClick={onAddText}
-          className="flex items-center justify-center gap-1.5 rounded-lg border border-border/50 py-2 text-xs font-medium hover:bg-muted/40 hover:border-border transition-colors"
-        >
-          <Type className="w-3.5 h-3.5" />
-          Add text
-        </button>
+      <div className={imageOnly ? "" : "grid grid-cols-2 gap-2"}>
+        {!imageOnly && (
+          <button
+            onClick={onAddText}
+            className="flex items-center justify-center gap-1.5 rounded-lg border border-border/50 py-2 text-xs font-medium hover:bg-muted/40 hover:border-border transition-colors"
+          >
+            <Type className="w-3.5 h-3.5" />
+            Add text
+          </button>
+        )}
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading}
           className="flex items-center justify-center gap-1.5 rounded-lg border border-border/50 py-2 text-xs font-medium hover:bg-muted/40 hover:border-border transition-colors disabled:opacity-50"
         >
           {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ImagePlus className="w-3.5 h-3.5" />}
-          Add image
+          {imageOnly ? "Add logo" : "Add image"}
         </button>
         <input
           ref={fileInputRef}

@@ -1,35 +1,35 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { GenerationProgressShell } from "@/modules/common/components/generation-progress-shell";
 
 const JOB_ID_KEY = "model-tour-job-id";
 
-// Residential-only generation screen — n8n's model-tour workflow renders the
-// video from the (possibly user-edited) script JSON produced by the finalize
-// step, so unlike the generic pipeline's splitting/voices/combining stages,
-// this is just generating -> done/error. Same resume-on-refresh contract as
-// every other pipeline: a jobId in sessionStorage + GET /jobs/:jobId to reattach.
-export function ModelTourGeneration({ script, onAbort, onBackToForm }) {
-  const [phase, setPhase] = useState("loading"); // loading | error | done
+// Background n8n video-generation job — split out of what used to be the
+// full-screen ModelTourGeneration component so the runner can keep polling
+// while the user is already on the Captions & Logo step picking styles.
+// Same resume-on-refresh contract as before: a jobId in sessionStorage +
+// GET /jobs/:jobId to reattach if the tab reloads mid-generation.
+export function useModelTourVideoJob() {
+  const [phase, setPhase] = useState("idle"); // idle | loading | error | done
   const [error, setError] = useState(null);
   const [resultUrl, setResultUrl] = useState(null);
-  const hasStarted = useRef(false);
-  const aborted = useRef(false);
+
+  const scriptRef = useRef(null);
+  const abortedRef = useRef(false);
   const abortControllerRef = useRef(null);
 
-  const resumeJob = async (jobId) => {
+  const resumeJob = (jobId) => {
     const poll = async () => {
-      if (aborted.current) return;
+      if (abortedRef.current) return;
       try {
         const res = await fetch(`/api/model-tour/jobs/${jobId}`);
-        if (aborted.current) return;
+        if (abortedRef.current) return;
         if (res.status === 404) {
           try {
             sessionStorage.removeItem(JOB_ID_KEY);
           } catch (_) {}
-          startGeneration();
+          start(scriptRef.current);
           return;
         }
         if (!res.ok) throw new Error(`Resume failed: ${res.status}`);
@@ -51,18 +51,21 @@ export function ModelTourGeneration({ script, onAbort, onBackToForm }) {
           setError(job.error || "Generation failed");
           return;
         }
-        if (!aborted.current) setTimeout(poll, 3000);
+        if (!abortedRef.current) setTimeout(poll, 3000);
       } catch (err) {
         console.error("[ModelTour] Resume poll failed:", err);
-        if (!aborted.current) setTimeout(poll, 5000);
+        if (!abortedRef.current) setTimeout(poll, 5000);
       }
     };
     poll();
   };
 
-  const startGeneration = async () => {
+  const start = async (script) => {
+    scriptRef.current = script;
+    abortedRef.current = false;
     setPhase("loading");
     setError(null);
+    setResultUrl(null);
 
     const jobId = crypto.randomUUID();
     try {
@@ -91,7 +94,7 @@ export function ModelTourGeneration({ script, onAbort, onBackToForm }) {
       let buffer = "";
 
       while (true) {
-        if (aborted.current) break;
+        if (abortedRef.current) break;
         const { done, value } = await reader.read();
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
@@ -123,14 +126,14 @@ export function ModelTourGeneration({ script, onAbort, onBackToForm }) {
         }
       }
 
-      if (!aborted.current && !reachedTerminal) {
+      if (!abortedRef.current && !reachedTerminal) {
         const message = "Lost connection to the server mid-generation. Refresh this page — it'll try to resume the job in progress.";
         setPhase("error");
         setError(message);
         toast.error("Connection lost", { description: message });
       }
     } catch (err) {
-      if (err.name === "AbortError" || aborted.current) return;
+      if (err.name === "AbortError" || abortedRef.current) return;
       console.error("[ModelTour] Generation error:", err);
       try {
         sessionStorage.removeItem(JOB_ID_KEY);
@@ -141,48 +144,34 @@ export function ModelTourGeneration({ script, onAbort, onBackToForm }) {
     }
   };
 
-  useEffect(() => {
-    if (hasStarted.current) return;
-    hasStarted.current = true;
+  const retry = () => start(scriptRef.current);
 
-    let existingJobId = null;
-    try {
-      existingJobId = sessionStorage.getItem(JOB_ID_KEY);
-    } catch (_) {}
-
-    if (existingJobId) resumeJob(existingJobId);
-    else startGeneration();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleAbort = () => {
-    aborted.current = true;
+  const abort = () => {
+    abortedRef.current = true;
     try {
       abortControllerRef.current?.abort();
     } catch (_) {}
     try {
       sessionStorage.removeItem(JOB_ID_KEY);
     } catch (_) {}
-    onAbort?.();
+    setPhase("idle");
   };
 
-  const handleDownload = () => {
-    if (!resultUrl) return;
-    window.location.href = `/api/download?url=${encodeURIComponent(resultUrl)}&name=${encodeURIComponent("home-tour.mp4")}`;
+  // Called once on mount by the runner — resumes an in-flight job if the tab
+  // was refreshed mid-generation, otherwise leaves phase at "idle". `script`
+  // is only needed so a post-resume Retry (after an error) has something to
+  // resend — the runner restores it from its own sessionStorage snapshot.
+  const resumeIfInFlight = (script) => {
+    let existingJobId = null;
+    try {
+      existingJobId = sessionStorage.getItem(JOB_ID_KEY);
+    } catch (_) {}
+    if (!existingJobId) return false;
+    scriptRef.current = script;
+    setPhase("loading");
+    resumeJob(existingJobId);
+    return true;
   };
 
-  return (
-    <GenerationProgressShell
-      phase={phase}
-      stageText="Generating your home tour video…"
-      error={error}
-      onRetry={startGeneration}
-      onAbort={handleAbort}
-      onDownload={handleDownload}
-      onOpenEditor={onBackToForm}
-      doneText="Your home tour video is ready!"
-      openEditorText="Back to form"
-      footerText="Don't close this tab — refreshing is safe, we'll pick up right where we left off."
-    />
-  );
+  return { phase, error, resultUrl, start, retry, abort, resumeIfInFlight };
 }
