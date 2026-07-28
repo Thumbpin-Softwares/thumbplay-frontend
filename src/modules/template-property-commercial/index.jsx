@@ -197,20 +197,37 @@ export default function PropertyCommercialRunner({ template }) {
     .filter(Boolean)
     .join("; ");
 
-  const modelTourScriptRequest = {
-    propertyName: scriptValues.projectName || "",
-    type: scriptValues.propertyClassification || undefined,
-    locationLandmarks: scriptValues.landmarks || "",
-    connectivity: scriptValues.connectivity || "",
-    language: scriptValues.language || "",
-    tierClass: scriptValues.projectType || "",
-    carpetArea: (isCommercial ? scriptValues.shopBuiltUpArea : scriptValues.carpetArea) || "",
-    amenities: (isCommercial ? commercialDetails : scriptValues.amenities) || "",
-    tonality: scriptValues.tonality || "",
-    vibe: scriptValues.vibe || "",
-    avatarImageUrls: avatarHook.selectedAvatars.map((a) => a.url).slice(0, 4),
-    propertyImageUrls: uploadedImages.map((img) => img.r2Url).slice(0, 4),
-  };
+  // Manual mode: the user already wrote the final voiceover text, so the
+  // AI-guidance-only fields (landmarks/connectivity/carpetArea/amenities/
+  // tonality/vibe) are meaningless — send just what's still needed to
+  // actually render the video (images, name, type/language/tierClass) plus
+  // the raw script text, instead of the full AI-mode field set.
+  const isManualScript = scriptValues.scriptMode === "manual";
+
+  const modelTourScriptRequest = isManualScript
+    ? {
+        propertyName: scriptValues.projectName || "",
+        type: scriptValues.propertyClassification || undefined,
+        language: scriptValues.language || "",
+        tierClass: scriptValues.projectType || "",
+        script: scriptValues.manualScript || "",
+        avatarImageUrls: avatarHook.selectedAvatars.map((a) => a.url).slice(0, 4),
+        propertyImageUrls: uploadedImages.map((img) => img.r2Url).slice(0, 4),
+      }
+    : {
+        propertyName: scriptValues.projectName || "",
+        type: scriptValues.propertyClassification || undefined,
+        locationLandmarks: scriptValues.landmarks || "",
+        connectivity: scriptValues.connectivity || "",
+        language: scriptValues.language || "",
+        tierClass: scriptValues.projectType || "",
+        carpetArea: (isCommercial ? scriptValues.shopBuiltUpArea : scriptValues.carpetArea) || "",
+        amenities: (isCommercial ? commercialDetails : scriptValues.amenities) || "",
+        tonality: scriptValues.tonality || "",
+        vibe: scriptValues.vibe || "",
+        avatarImageUrls: avatarHook.selectedAvatars.map((a) => a.url).slice(0, 4),
+        propertyImageUrls: uploadedImages.map((img) => img.r2Url).slice(0, 4),
+      };
 
   const handleGenerateModelTourScript = async () => {
     setGeneratingModelTourScript(true);
