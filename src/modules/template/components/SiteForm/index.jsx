@@ -203,11 +203,14 @@ export function SiteForm({ values = {}, onChange }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Affordable/Luxury/Ultra Luxury and the Commercial space types are
-  // disjoint id sets, so a project type picked before switching
-  // classification would otherwise linger as an invalid, unlabeled value.
+  // Stored as the option's label (not its id) — sent to n8n as `tier_class`,
+  // and a plain label like "Shopping Malls" is far easier for the LLM
+  // prompt to read than a slug like "shopping-malls". Affordable/Luxury/
+  // Ultra Luxury and the Commercial space types are disjoint sets, so a
+  // project type picked before switching classification would otherwise
+  // linger as a stale, mismatched value.
   useEffect(() => {
-    if (values.projectType && !projectTypeOptions.some((t) => t.id === values.projectType)) {
+    if (values.projectType && !projectTypeOptions.some((t) => t.label === values.projectType)) {
       setField("projectType", "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -301,7 +304,7 @@ export function SiteForm({ values = {}, onChange }) {
               </SelectTrigger>
               <SelectContent>
                 {projectTypeOptions.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
+                  <SelectItem key={t.id} value={t.label}>
                     {t.label}
                   </SelectItem>
                 ))}
