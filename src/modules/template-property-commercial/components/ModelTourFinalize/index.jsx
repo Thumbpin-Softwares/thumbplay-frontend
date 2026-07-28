@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, ImagePlus, User2, Clapperboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -52,19 +52,30 @@ export function ModelTourFinalize({ images = [], selectedAvatars = [], script, o
   const [maxCharsBySceneId, setMaxCharsBySceneId] = useState(() =>
     Object.fromEntries(storyboard.map((s) => [s.scene_chunk_id, (s.voiceover_audio_script ?? "").length]))
   );
+  // Every keystroke round-trips through the parent's onChange and comes back
+  // down as a new `script` object — that's not a "new script arrived from
+  // outside" event, it's an echo of our own edit, and must not re-derive
+  // maxChars from the (possibly just-shortened) current text. lastEmitted
+  // tracks what we ourselves last sent up, so the resync below only fires
+  // for a genuinely external script (e.g. regenerating in the step before).
+  const lastEmitted = useRef(script);
   const [syncedScript, setSyncedScript] = useState(script);
-  if (script !== syncedScript) {
+  if (script !== syncedScript && script !== lastEmitted.current) {
     setSyncedScript(script);
     setDrafts(Object.fromEntries(storyboard.map((s) => [s.scene_chunk_id, s.voiceover_audio_script ?? ""])));
     setMaxCharsBySceneId(
       Object.fromEntries(storyboard.map((s) => [s.scene_chunk_id, (s.voiceover_audio_script ?? "").length]))
     );
+  } else if (script !== syncedScript) {
+    setSyncedScript(script);
   }
 
   const handleVoiceoverChange = (sceneId, value, maxChars) => {
     const clamped = maxChars != null ? value.slice(0, maxChars) : value;
     setDrafts((prev) => ({ ...prev, [sceneId]: clamped }));
-    onChange?.(updateVoiceover(script, sceneId, clamped));
+    const next = updateVoiceover(script, sceneId, clamped);
+    lastEmitted.current = next;
+    onChange?.(next);
   };
 
   return (
