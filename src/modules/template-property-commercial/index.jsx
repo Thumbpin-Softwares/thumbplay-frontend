@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { templateNotify as toast } from "@/modules/template/components/notification";
 import { useAvatars } from "@/modules/common/hooks/useAvatars";
 import { StepCapsule } from "@/modules/template/components/StepCapsule";
 import { Breadcrumbs } from "@/modules/template/components/Breadcrumbs";
@@ -17,6 +18,18 @@ import { History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const STEP_LABELS = ["Add Assets", "Script", "Finalize", "Captions & Logo"];
+
+// A crashed/unreachable backend can surface here as an HTML error page
+// rather than JSON (e.g. "Unexpected token '<', \"<!DOCTYPE \"..." from a
+// bare res.json() call) — parse defensively so that shows up as a clean
+// fallback instead of a raw SyntaxError bubbling into the UI.
+async function parseJsonSafe(res) {
+  try {
+    return await res.json();
+  } catch (_) {
+    return {};
+  }
+}
 
 // All three classifications route through the n8n model-tour pipeline now —
 // n8n switches its master prompt internally based on `type`. "plotted" is
@@ -39,6 +52,7 @@ const FORM_STATE_KEY = "model-tour-form-state";
 // true, kept only so a classification can be pulled back out of
 // MODEL_TOUR_CLASSIFICATIONS later without rebuilding this fallback.
 export default function PropertyCommercialRunner({ template }) {
+  const router = useRouter();
   const [step, setStep] = useState(0);
   const [images, setImages] = useState([]);
   const [scriptValues, setScriptValues] = useState({});
@@ -237,7 +251,7 @@ export default function PropertyCommercialRunner({ template }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(modelTourScriptRequest),
       });
-      const data = await res.json();
+      const data = await parseJsonSafe(res);
       if (!res.ok) throw new Error(data.error || "Script generation failed");
 
       // The n8n call behind this can run past Vercel's ~60s edge-response
@@ -248,8 +262,8 @@ export default function PropertyCommercialRunner({ template }) {
       while (true) {
         await new Promise((resolve) => setTimeout(resolve, 3000));
         const jobRes = await fetch(`/api/model-tour/jobs/${jobId}`);
+        const { job } = await parseJsonSafe(jobRes);
         if (!jobRes.ok) throw new Error(`Lost track of the script job: ${jobRes.status}`);
-        const { job } = await jobRes.json();
         if (job.status === "done") {
           script = job.result;
           break;
@@ -259,6 +273,17 @@ export default function PropertyCommercialRunner({ template }) {
 
       setModelTourScript(script);
       setStep(2);
+
+      const credits = script?.creditsCharged;
+      if (credits != null) {
+        toast.success("Script generated", {
+          description: `${credits} credit${credits !== 1 ? "s" : ""} deducted.`,
+          action: {
+            label: "View history",
+            onClick: () => router.push("/dashboard/credits"),
+          },
+        });
+      }
     } catch (err) {
       toast.error("Script generation failed", { description: err.message });
     } finally {
@@ -283,7 +308,7 @@ export default function PropertyCommercialRunner({ template }) {
   };
 
   return (
-    <div className="h-full max-w-4xl mx-auto px-4 py-12 flex flex-col animate-fade-in">
+    <div className="h-full w-full max-w-none 2xl:max-w-5xl mx-auto px-4 py-12 flex flex-col animate-fade-in">
       <div className="shrink-0 flex items-center justify-between gap-2">
         <Breadcrumbs template={template} />
         <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setShowGenerations(true)}>
@@ -294,7 +319,7 @@ export default function PropertyCommercialRunner({ template }) {
       <ModelTourGenerations open={showGenerations} onOpenChange={setShowGenerations} />
 
       {step < (isModelTourFlow ? 4 : 3) && (
-        <div className="shrink-0 flex justify-center py-3">
+        <div className="shrink-0 flex justify-start overflow-x-auto scrollbar-hide py-3">
           <StepCapsule
             currentStep={step}
             steps={template.steps || STEP_LABELS}
@@ -366,6 +391,10 @@ export default function PropertyCommercialRunner({ template }) {
               jobError={videoJob.error}
               resultUrl={videoJob.resultUrl}
               onRetryJob={videoJob.retry}
+              onStartOver={() => {
+                videoJob.abort();
+                setStep(2);
+              }}
               onBack={() => setStep(2)}
             />
           )}

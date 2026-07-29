@@ -1,31 +1,10 @@
 "use client";
-
-// 📚 HOW RAZORPAY CHECKOUT WORKS ON THE FRONTEND
-//
-// 1. User clicks "Go Pro" / "Buy Credits" → we call our Express backend's
-//    POST /api/v1/payments/create-order  with { itemId }.
-//    itemId can be: 'plan-creator', 'plan-pro', 'plan-studio' (subscription plans)
-//                or: 'pack-10', 'pack-50', 'pack-200', 'pack-500' (credit top-ups)
-//
-// 2. Backend creates the order on Razorpay's servers and returns { orderId, keyId, ... }.
-//    We open the Razorpay checkout popup with those details.
-//
-// 3. When the user pays:
-//    - Razorpay fires our backend webhook → backend adds credits + updates plan atomically
-//    - The popup's handler() callback fires → we show a success toast (UX only)
-//
-// NOTE: Never rely on the frontend success callback to grant credits.
-// Credits are granted server-side via the webhook which is HMAC-signed.
-
 import { useState } from "react";
 import Link from "next/link";
 import { Sparkle, Check, Loader2, Zap, Star } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 
-// ---------------------------------------------------------------------------
-// Plans — matches the real pricing page at ai.thumbpin.in/pricing
-// ---------------------------------------------------------------------------
 const SUBSCRIPTION_PLANS = [
   {
     id: "plan-creator",
@@ -104,19 +83,6 @@ const SUBSCRIPTION_PLANS = [
   },
 ];
 
-// ---------------------------------------------------------------------------
-// Credit top-up packs (one-time, no plan change)
-// ---------------------------------------------------------------------------
-const CREDIT_PACKS = [
-  { id: "pack-10",  credits: 10,  amountINR: 199,  label: "10 Credits",  tag: "" },
-  { id: "pack-50",  credits: 50,  amountINR: 799,  label: "50 Credits",  tag: "Popular" },
-  { id: "pack-200", credits: 200, amountINR: 2499, label: "200 Credits", tag: "" },
-  { id: "pack-500", credits: 500, amountINR: 4999, label: "500 Credits", tag: "" },
-];
-
-// ---------------------------------------------------------------------------
-// Tiny inline Toast
-// ---------------------------------------------------------------------------
 function Toast({ message, type, onClose }) {
   return (
     <div
@@ -198,7 +164,7 @@ function useRazorpay() {
         order_id: order.orderId,    // the order ID from Razorpay
         amount: order.amount,       // in paise
         currency: order.currency,
-        name: "ThumbpinVids",
+        name: "Thumbplay AI",
         description,
         image: "/favicon.ico",
         prefill: {
@@ -271,9 +237,6 @@ export default function Payment() {
           Great videos start with a plan
         </h1>
         <span className="text-sm sm:text-base text-neutral-600 flex flex-wrap items-center justify-center gap-1">
-          <Link className="underline" href="/dashboard">
-            Start for free,
-          </Link>
           upgrade to get powerful features.
         </span>
       </div>
@@ -377,54 +340,6 @@ export default function Payment() {
             </div>
           );
         })}
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* Credit top-up packs                                                 */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="mt-8 max-w-4xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <div className="flex-1 h-px bg-neutral-200" />
-          <span className="text-sm font-medium text-neutral-500 whitespace-nowrap flex items-center gap-1.5">
-            <Zap size={13} />
-            Or top up with a one-time credit pack
-          </span>
-          <div className="flex-1 h-px bg-neutral-200" />
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {CREDIT_PACKS.map((pack) => {
-            const isLoading = loadingItem === pack.id;
-            return (
-              <div key={pack.id} className="relative">
-                {pack.tag === "Popular" && (
-                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 z-10 rounded-full bg-black px-3 py-0.5 text-[10px] font-semibold text-white flex items-center gap-1">
-                    <Star size={9} />
-                    Popular
-                  </span>
-                )}
-                <button
-                  id={`pack-${pack.id}`}
-                  onClick={() => initiatePayment(pack.id, pack.label)}
-                  disabled={isLoading || loadingItem !== null}
-                  className={`w-full flex flex-col items-center rounded-2xl border py-5 px-3 transition-all duration-200
-                    hover:-translate-y-0.5 hover:shadow-md
-                    disabled:opacity-60 disabled:cursor-not-allowed
-                    ${pack.tag === "Popular" ? "border-black bg-neutral-50" : "border-neutral-200 bg-white"}`}
-                >
-                  <span className="text-lg font-bold">₹{pack.amountINR.toLocaleString("en-IN")}</span>
-                  <span className="text-xs text-neutral-500 mt-0.5 mb-3">+GST</span>
-                  <span className="text-sm font-semibold">{pack.credits} Credits</span>
-                  {isLoading ? (
-                    <Loader2 size={12} className="animate-spin mt-2 text-neutral-400" />
-                  ) : (
-                    <span className="text-[11px] text-neutral-400 mt-1">one-time</span>
-                  )}
-                </button>
-              </div>
-            );
-          })}
-        </div>
       </div>
 
       {/* Toast */}
