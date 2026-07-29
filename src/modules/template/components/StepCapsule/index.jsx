@@ -10,7 +10,7 @@ export function StepCapsule({ currentStep = 0, steps = DEFAULT_STEPS, maxStep, o
   const reachable = maxStep ?? currentStep - 1;
 
   return (
-    <div className="flex items-center gap-2 rounded-full bg-neutral-100 p-2">
+    <div className="flex items-center gap-2 rounded-full bg-neutral-100 p-2 shrink-0 mx-auto">
       {steps.map((label, idx) => {
         const active = idx === currentStep;
         const completed = idx < currentStep;

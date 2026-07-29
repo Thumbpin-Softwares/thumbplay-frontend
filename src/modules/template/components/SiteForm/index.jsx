@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { ChevronDown, FileText, Wand2 } from "lucide-react";
+import { ChevronDown, FileText, Wand2, Building2, Home, Trees, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,12 +25,17 @@ import {
 // place of "Plotted" — the value sent as `type` is still "plotted", n8n's
 // switch doesn't change.
 const CLASSIFICATIONS = [
-  { id: "commercial", label: "Commercial" },
-  { id: "residential", label: "Residential" },
-  { id: "plotted", label: "Land" },
+  { id: "commercial", label: "Commercial", description: "Offices, malls, business centers", icon: Building2 },
+  { id: "residential", label: "Residential", description: "Apartments, villas, housing projects", icon: Home },
+  { id: "plotted", label: "Land", description: "Plots, farmhouses, agricultural land", icon: Trees },
 ];
 
-const GLOBAL_REQUIRED = ["propertyClassification", "projectName", "projectType", "projectArea", "location", "tonality", "landmarks", "connectivity", "vibe", "language"];
+const SCRIPT_MODES = [
+  { id: "ai", label: "Generate with AI", description: "Answer a few questions and we'll write it for you", icon: Wand2 },
+  { id: "manual", label: "Manual Script", description: "Write or paste your own script", icon: FileText },
+];
+
+const GLOBAL_REQUIRED = ["propertyClassification", "scriptMode", "projectName", "projectType", "projectArea", "location", "tonality", "landmarks", "connectivity", "vibe", "language"];
 
 // Checks the fields required for the current classification. Tonality,
 // Landmarks, Connectivity, Vibe, and Language are global (every property
@@ -102,13 +107,19 @@ const LAND_PROJECT_TYPES = [
   { id: "industrial-plots", label: "Industrial Plots" },
 ];
 
-// Same language set as the shared SpeakerLanguage picker (used elsewhere as
-// a button group) — kept identical so "english"/"hindi"/"hinglish" values
-// stay consistent across the app regardless of which control renders them.
+// Script/voice language for the model-tour n8n pipeline — passed through as
+// a raw string, not used locally to pick a TTS voice (unlike the reel/
+// car-exit pipelines' Sarvam-backed language list in utils/constants.js).
 const LANGUAGES = [
   { id: "english", label: "English" },
   { id: "hindi", label: "Hindi" },
   { id: "hinglish", label: "Hinglish" },
+  { id: "assamese", label: "Assamese" },
+  { id: "bengali", label: "Bengali" },
+  { id: "gujarati", label: "Gujarati" },
+  { id: "kannada", label: "Kannada" },
+  { id: "odia", label: "Odia" },
+  { id: "punjabi", label: "Punjabi" },
 ];
 
 const VIBE_OPTIONS = [
@@ -148,6 +159,36 @@ function TextField({ label, field, values, setField, required, placeholder, hint
       />
       {hint && <p className="text-[11px] text-neutral-400">{hint}</p>}
     </div>
+  );
+}
+
+// Bordered selectable card — shared visual for the Property Classification
+// and Script mode pickers, modeled on the avatar-selection card pattern in
+// ModelSelector (border highlight + check badge when selected).
+function OptionCard({ icon: Icon, label, description, selected, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`relative flex flex-col items-start gap-2 rounded-xl border-2 p-4 text-left transition-all cursor-pointer ${
+        selected ? "border-[#c7f038] ring-2 ring-[#c7f038] bg-neutral-900" : "border-border/40 hover:border-[#c7f038] bg-card/50"
+      }`}
+    >
+      {selected && (
+        <div className="absolute top-3 right-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#c7f038]">
+          <Check className="w-3 h-3 text-black" />
+        </div>
+      )}
+      <div className="flex gap-4 items-center justify-center">
+        <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${selected ? "bg-[#c7f038]" : "bg-neutral-100"}`}>
+        <Icon className={`w-4.5 h-4.5 ${selected ? "text-black" : "text-neutral-700"}`} />
+      </div>
+      <div>
+        <p className={`text-sm font-semibold ${selected ? "text-[#c7f038]" : "text-neutral-800"}`}>{label}</p>
+        <p className={`text-[11px] ${selected ? "text-neutral-300" : "text-neutral-400"}`}>{description}</p>
+      </div>
+      </div>
+    </button>
   );
 }
 
@@ -206,21 +247,13 @@ function MultiSelectField({ label, field, options, values, setField, required, p
 export function SiteForm({ values = {}, onChange }) {
   const setField = (key, val) => onChange?.({ ...values, [key]: val });
   const classification = values.propertyClassification;
-  const scriptMode = values.scriptMode || "ai";
+  const scriptMode = values.scriptMode;
   const projectTypeOptions =
     classification === "commercial"
       ? COMMERCIAL_PROJECT_TYPES
       : classification === "plotted"
         ? LAND_PROJECT_TYPES
         : PROJECT_TYPES;
-
-  // Defaults to Residential so the user isn't forced to make a choice
-  // before doing anything else. Only fires once on mount and only if
-  // nothing's set yet, so a session-restored classification isn't clobbered.
-  useEffect(() => {
-    if (!classification) setField("propertyClassification", "residential");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Stored as the option's label (not its id) — sent to n8n as `tier_class`,
   // and a plain label like "Shopping Malls" is far easier for the LLM
@@ -237,66 +270,46 @@ export function SiteForm({ values = {}, onChange }) {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center gap-2">
-        <div className="w-7 h-7 rounded-lg bg-neutral-900 flex items-center justify-center">
-          <FileText className="w-4 h-4 text-[#c7f038]" />
+      {/* ── Step 1: Property Classification ── */}
+      <div className="space-y-1.5">
+        <FieldLabel required>Select your property classification</FieldLabel>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {CLASSIFICATIONS.map((c) => (
+            <OptionCard
+              key={c.id}
+              icon={c.icon}
+              label={c.label}
+              description={c.description}
+              selected={classification === c.id}
+              onClick={() => setField("propertyClassification", c.id)}
+            />
+          ))}
         </div>
-        <h3 className="text-sm font-semibold">Site Details</h3>
       </div>
 
-      {/* ── Global fields ── */}
-      <div className="space-y-4">
+      {/* ── Step 2: Script mode ── */}
+      {classification && (
         <div className="space-y-1.5">
-          <FieldLabel required>Property Classification</FieldLabel>
-          <div className="flex gap-2 flex-wrap">
-            {CLASSIFICATIONS.map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                disabled={c.disabled}
-                onClick={() => !c.disabled && setField("propertyClassification", c.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  c.disabled
-                    ? "border border-border/50 text-muted-foreground/40 cursor-not-allowed"
-                    : classification === c.id
-                      ? "bg-neutral-900 text-[#c7f038] cursor-pointer"
-                      : "border border-border text-muted-foreground hover:border-neutral-400 cursor-pointer"
-                }`}
-              >
-                {c.label}
-                {c.disabled && <span className="ml-1 text-[10px] opacity-70">(Soon)</span>}
-              </button>
+          <FieldLabel required>How would you like to add the script?</FieldLabel>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {SCRIPT_MODES.map((m) => (
+              <OptionCard
+                key={m.id}
+                icon={m.icon}
+                label={m.label}
+                description={m.description}
+                selected={scriptMode === m.id}
+                onClick={() => setField("scriptMode", m.id)}
+              />
             ))}
           </div>
         </div>
+      )}
 
+      {/* ── Step 3: The form, revealed once a script mode is chosen ── */}
+      {classification && scriptMode && (
+      <div className="space-y-4">
         <TextField label="Project Name" field="projectName" values={values} setField={setField} required />
-
-        <div className="space-y-1.5">
-          <FieldLabel required>Script</FieldLabel>
-          <div className="inline-flex rounded-lg border border-border/60 bg-neutral-100 p-1">
-            <button
-              type="button"
-              onClick={() => setField("scriptMode", "ai")}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
-                scriptMode === "ai" ? "bg-neutral-900 text-[#c7f038]" : "text-muted-foreground hover:text-neutral-700"
-              }`}
-            >
-              <Wand2 className="w-3.5 h-3.5" />
-              Generate with AI
-            </button>
-            <button
-              type="button"
-              onClick={() => setField("scriptMode", "manual")}
-              className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
-                scriptMode === "manual" ? "bg-neutral-900 text-[#c7f038]" : "text-muted-foreground hover:text-neutral-700"
-              }`}
-            >
-              <FileText className="w-3.5 h-3.5" />
-              Manual Script
-            </button>
-          </div>
-        </div>
 
         {scriptMode === "manual" && (
           <div className="space-y-4">
@@ -345,11 +358,10 @@ export function SiteForm({ values = {}, onChange }) {
             />
           </div>
         )}
-      </div>
 
-      {scriptMode === "ai" && (
-      <>
-      <div className="space-y-4">
+        {scriptMode === "ai" && (
+        <>
+        <div className="space-y-4">
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <FieldLabel required>Project Type</FieldLabel>
@@ -376,41 +388,45 @@ export function SiteForm({ values = {}, onChange }) {
             placeholder="e.g., 5 acres, 2.5M sqft township"
             hint="Total built-up area, township area, or project area"
           />
-          <TextField label="Location" field="location" values={values} setField={setField} required />
-        </div>
-
-        <MultiSelectField
-          label="Tonality"
-          field="tonality"
-          options={TONALITY_OPTIONS}
-          values={values}
-          setField={setField}
-          required
-          placeholder="Select tonality"
-          hint="Guides the AI's tone for the generated script"
-        />
-
-        <div className="grid sm:grid-cols-2 gap-4">
-          <TextField label="Landmarks" field="landmarks" values={values} setField={setField} required />
-          <TextField label="Connectivity" field="connectivity" values={values} setField={setField} required />
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <FieldLabel required>Language</FieldLabel>
-            <Select value={values.language || ""} onValueChange={(v) => setField("language", v)}>
-              <SelectTrigger className="w-full text-sm">
-                <SelectValue placeholder="Select language" />
-              </SelectTrigger>
-              <SelectContent>
-                {LANGUAGES.map((l) => (
-                  <SelectItem key={l.id} value={l.id}>
-                    {l.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="space-y-4">
+            <TextField label="Location" field="location" values={values} setField={setField} required />
+            <div className="space-y-1.5">
+              <FieldLabel required>Language</FieldLabel>
+              <Select value={values.language || ""} onValueChange={(v) => setField("language", v)}>
+                <SelectTrigger className="w-full text-sm">
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  {LANGUAGES.map((l) => (
+                    <SelectItem key={l.id} value={l.id}>
+                      {l.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+          <div className="space-y-4">
+            <TextField label="Landmarks" field="landmarks" values={values} setField={setField} required />
+            <TextField label="Connectivity" field="connectivity" values={values} setField={setField} required />
+          </div>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <MultiSelectField
+            label="Tonality"
+            field="tonality"
+            options={TONALITY_OPTIONS}
+            values={values}
+            setField={setField}
+            required
+            placeholder="Select tonality"
+            hint="Guides the tone for the generated script"
+          />
+
           <MultiSelectField
             label="Vibe"
             field="vibe"
@@ -478,7 +494,9 @@ export function SiteForm({ values = {}, onChange }) {
           <TextField label="Amenities" field="amenities" values={values} setField={setField} textarea />
         </div>
       )}
-      </>
+        </>
+        )}
+      </div>
       )}
     </div>
   );

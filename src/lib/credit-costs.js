@@ -30,6 +30,12 @@ export const CREDIT_ACTIONS = {
   // cost is a placeholder — captions are priced dynamically per job via
   // computeCaptionCreditCost() and passed in as a costOverride.
   captions_generation: { cost: 0, freeBucket: null, label: "Caption Generation" },
+
+  // n8n's /model-tour/script webhook reports back a real infra cost of
+  // roughly $0.0004-0.0006 per call. At the $1 = 480 credits peg that's
+  // under 1 credit even with the standard 10x margin, so this is a flat
+  // display estimate rather than a computed value like captions.
+  model_tour_script_generation: { cost: 4, freeBucket: null, label: "Model Tour Script Generation" },
 };
 
 // VEED subtitles ("captions_generation") pricing — usage-based instead of a

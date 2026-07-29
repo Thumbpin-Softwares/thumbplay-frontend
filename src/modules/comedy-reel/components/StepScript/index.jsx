@@ -24,9 +24,10 @@ import { LANGUAGES } from "@/utils/constants";
 import { ELEVENLABS_VOICES } from "@/lib/elevenlabs-config";
 import { PROPERTY_TYPE_GROUPS, getPropertyType, DEFAULT_PROPERTY_TYPE } from "@/lib/property-types";
 import { useUser } from "@/hooks/use-user";
-import { canAffordAction } from "@/lib/credit-costs";
+import { canAffordAction, CREDIT_ACTIONS } from "@/lib/credit-costs";
 
 const PIPELINE_CREDIT_ACTION = "action_reel_video";
+const PIPELINE_CREDIT_COST = CREDIT_ACTIONS[PIPELINE_CREDIT_ACTION].cost;
 
 const MIN_SCRIPT_WORDS = 20;
 const MAX_SCRIPT_WORDS = 300;
@@ -652,30 +653,36 @@ export function StepScript({ onBack, onGenerate }) {
         </div>
       )}
 
-      <div className="flex items-center justify-between pt-2">
-        <Button variant="ghost" onClick={onBack} className="gap-2 text-muted-foreground">
-          <ChevronLeft className="w-4 h-4" />
-          Back
-        </Button>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span className="inline-block">
-              <Button
-                onClick={handleGenerate}
-                disabled={!isScriptReady || !affordability.ok}
-                className="gradient-bg text-white hover:opacity-90 disabled:opacity-40 shadow-lg gap-2 px-6"
-              >
-                <Sparkles className="w-4 h-4" />
-                Generate Comedy Reel
-              </Button>
-            </span>
-          </TooltipTrigger>
-          {!affordability.ok && (
-            <TooltipContent>
-              Not enough credits — need {affordability.required}, you have {affordability.credits}.
-            </TooltipContent>
-          )}
-        </Tooltip>
+      <div className="flex flex-col items-end gap-1.5 pt-2">
+        <p className="text-[11px] text-muted-foreground">
+          Estimated cost: <span className="font-medium text-neutral-600">{PIPELINE_CREDIT_COST} credits</span>
+        </p>
+
+        <div className="flex w-full items-center justify-between">
+          <Button variant="ghost" onClick={onBack} className="gap-2 text-muted-foreground">
+            <ChevronLeft className="w-4 h-4" />
+            Back
+          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-block">
+                <Button
+                  onClick={handleGenerate}
+                  disabled={!isScriptReady || !affordability.ok}
+                  className="gradient-bg text-white hover:opacity-90 disabled:opacity-40 shadow-lg gap-2 px-6"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Generate Comedy Reel
+                </Button>
+              </span>
+            </TooltipTrigger>
+            {!affordability.ok && (
+              <TooltipContent>
+                Not enough credits — need {affordability.required}, you have {affordability.credits}.
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </div>
       </div>
     </div>
   );

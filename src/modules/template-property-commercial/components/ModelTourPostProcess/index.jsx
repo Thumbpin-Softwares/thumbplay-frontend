@@ -57,7 +57,7 @@ function createLogoOverlay(url) {
 // /api/exports/render-remotion route every other reopened model-tour clip
 // uses, then runs the (possibly staged) caption choice through the same
 // /api/captions/generate call the main Editor uses.
-export function ModelTourPostProcess({ jobPhase, jobError, resultUrl, onRetryJob, onBack }) {
+export function ModelTourPostProcess({ jobPhase, jobError, resultUrl, onRetryJob, onStartOver, onBack }) {
   const [probedDuration, setProbedDuration] = useState(0);
   useEffect(() => {
     if (!resultUrl) return;
@@ -266,12 +266,22 @@ export function ModelTourPostProcess({ jobPhase, jobError, resultUrl, onRetryJob
                   {jobPhase === "error" ? (
                     <>
                       <p className="text-xs text-white/70">{jobError}</p>
-                      <button
-                        onClick={onRetryJob}
-                        className="rounded-lg border border-white/30 px-3 py-1.5 text-xs text-white hover:bg-white/10"
-                      >
-                        Retry
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={onRetryJob}
+                          className="rounded-lg border border-white/30 px-3 py-1.5 text-xs text-white hover:bg-white/10"
+                        >
+                          Retry
+                        </button>
+                        {onStartOver && (
+                          <button
+                            onClick={onStartOver}
+                            className="rounded-lg border border-white/30 px-3 py-1.5 text-xs text-white hover:bg-white/10"
+                          >
+                            Start Over
+                          </button>
+                        )}
+                      </div>
                     </>
                   ) : (
                     <>

@@ -34,7 +34,11 @@ export function useModelTourVideoJob() {
         }
         if (!res.ok) throw new Error(`Resume failed: ${res.status}`);
 
-        const { job } = await res.json();
+        // A crashed/unreachable backend can surface here as an HTML error
+        // page rather than JSON — parse defensively instead of letting a
+        // raw SyntaxError ("Unexpected token '<'...") reach the UI.
+        const { job } = await res.json().catch(() => ({ job: null }));
+        if (!job) throw new Error("Resume failed: invalid job response");
         if (job.status === "done") {
           try {
             sessionStorage.removeItem(JOB_ID_KEY);

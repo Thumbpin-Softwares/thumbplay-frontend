@@ -15,12 +15,22 @@ export async function POST(request) {
   }
 
   const body = await request.text();
-  const backendRes = await fetch(`${BACKEND_URL}/api/v1/model-tour/generate`, {
-    method: "POST",
-    headers: { Cookie: `${AUTH_COOKIE_NAME}=${token}`, "Content-Type": "application/json" },
-    body,
-    cache: "no-store",
-  });
+
+  let backendRes;
+  try {
+    backendRes = await fetch(`${BACKEND_URL}/api/v1/model-tour/generate`, {
+      method: "POST",
+      headers: { Cookie: `${AUTH_COOKIE_NAME}=${token}`, "Content-Type": "application/json" },
+      body,
+      cache: "no-store",
+    });
+  } catch (error) {
+    console.error("[model-tour/generate] Failed to reach backend:", error);
+    return new Response(JSON.stringify({ error: "Unable to reach the server" }), {
+      status: 502,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   if (!backendRes.ok || !backendRes.body) {
     const data = await backendRes.json().catch(() => ({}));

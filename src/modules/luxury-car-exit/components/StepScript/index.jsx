@@ -21,6 +21,12 @@ import { Button } from "@/components/ui/button";
 import { LANGUAGES } from "@/utils/constants";
 import { ELEVENLABS_VOICES, ELEVENLABS_VOICE_SETTINGS } from "@/lib/elevenlabs-config";
 import { PROPERTY_TYPE_GROUPS, getPropertyType, DEFAULT_PROPERTY_TYPE } from "@/lib/property-types";
+import { CREDIT_ACTIONS } from "@/lib/credit-costs";
+
+// This pipeline has no dedicated CREDIT_ACTIONS entry of its own (no client-
+// side affordability check exists here) — reusing the flat script-generation
+// estimate other templates show, since actual infra cost is similarly tiny.
+const ESTIMATED_CREDIT_COST = CREDIT_ACTIONS.model_tour_script_generation.cost;
 
 const MIN_SCRIPT_WORDS = 20;
 const MAX_SCRIPT_WORDS = 300;
@@ -583,23 +589,29 @@ export function StepScript({ onBack, onGenerate }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-2">
-        <Button
-          type="button"
-          onClick={onBack}
-          className="bg-neutral-900 text-[#c7f038] hover:opacity-90 disabled:opacity-50 hover:bg-neutral-900 shadow-lg gap-2 px-6"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          Back
-        </Button>
-        <Button
-          onClick={handleGenerate}
-          disabled={!isScriptReady}
-          className="bg-neutral-900 text-[#c7f038] hover:opacity-90 disabled:opacity-50 hover:bg-neutral-900 shadow-lg gap-2 px-6"
-        >
-          Continue to Finalize
-          <ChevronLeft className="w-4 h-4 rotate-180" />
-        </Button>
+      <div className="flex flex-col items-end gap-1.5 pt-2">
+        <p className="text-[11px] text-muted-foreground">
+          Estimated cost: <span className="font-medium text-neutral-600">{ESTIMATED_CREDIT_COST} credits</span>
+        </p>
+
+        <div className="flex w-full items-center justify-between">
+          <Button
+            type="button"
+            onClick={onBack}
+            className="bg-neutral-900 text-[#c7f038] hover:opacity-90 disabled:opacity-50 hover:bg-neutral-900 shadow-lg gap-2 px-6"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Back
+          </Button>
+          <Button
+            onClick={handleGenerate}
+            disabled={!isScriptReady}
+            className="bg-neutral-900 text-[#c7f038] hover:opacity-90 disabled:opacity-50 hover:bg-neutral-900 shadow-lg gap-2 px-6"
+          >
+            Continue to Finalize
+            <ChevronLeft className="w-4 h-4 rotate-180" />
+          </Button>
+        </div>
       </div>
     </div>
   );
