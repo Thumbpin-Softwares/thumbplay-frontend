@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import Image from "next/image";
 
-const ITEMS = ["/usage/carousal/1.svg", "/usage/carousal/2.svg", "/usage/carousal/3.png", "/usage/carousal/4.png", "/usage/carousal/5.jpg", "/usage/carousal/6.png"];
+const ITEMS = ["/usage/carousal/1.svg", "/usage/carousal/2.svg", "/usage/carousal/3.png", "/usage/carousal/4.png", "/usage/carousal/5.jpg", "/usage/carousal/6.png", "/usage/carousal/8.png", "/usage/carousal/10.webp"];
 
 export default function Carousal() {
   const trackRef = useRef(null);

@@ -51,6 +51,14 @@ export const TEMPLATES = [
     tag: "Popular",
     steps: ["Add Assets", "Script", "Finalize"],
   },
+  {
+    slug: "model-exit-luxury-car",
+    title: "Model Exiting a Luxury Car and does commercial",
+    category: "real-estate",
+    video: "https://content.thumbpin.in/templates/modeExitLuxuryVehicle.mp4",
+    tag: "New",
+    steps: ["Add Assets", "Script", "Finalize"],
+  },
 ];
 
 // Templates shown in the catalog. Set `hidden: true` on a template above to
