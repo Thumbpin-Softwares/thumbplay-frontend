@@ -103,7 +103,6 @@ export async function getVideoDuration(url) {
       resolve(isFinite(video.duration) && video.duration > 0 ? video.duration : 0);
     });
     video.addEventListener("error", () => resolve(0));
-    video.crossOrigin = "anonymous";
     video.preload = "metadata";
     video.src = url;
   });
@@ -118,7 +117,6 @@ export async function getAudioDuration(url) {
       resolve(isFinite(audio.duration) && audio.duration > 0 ? audio.duration : 0);
     });
     audio.addEventListener("error", () => resolve(0));
-    audio.crossOrigin = "anonymous";
     audio.preload = "metadata";
     audio.src = url;
   });
