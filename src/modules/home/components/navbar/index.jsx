@@ -72,7 +72,7 @@ export function Navbar() {
             <div className="bg-black p-2 rounded-full flex items-center justify-center">
               <RectangleGoggles className="w-4 h-4" fill="#c7f038" />
             </div>
-            <span className="text-lg sm:text-xl font-medium">
+            <span className="text-sm sm:text-xl font-medium">
               Thumbplay AI
             </span>
           </Link>
@@ -159,7 +159,7 @@ export function Navbar() {
           <div className="md:hidden flex items-center gap-2">
             {isAuthenticated ? (
               <Link href="/dashboard" className="">
-                <span className="bg-linear-to-b from-black to-neutral-600 text-white text-sm py-2 px-4 flex items-center justify-center rounded-full shadow">
+                <span className="bg-linear-to-b from-black to-neutral-600 text-white text-xs py-2 px-4 flex items-center justify-center rounded-full shadow">
                   Dashboard
                 </span>
               </Link>
