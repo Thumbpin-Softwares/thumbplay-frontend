@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 // modules/luxury-car-exit), add it here and it takes over automatically.
 export const TEMPLATE_RUNNERS = {
   "property-commercial": dynamic(() => import("@/modules/template-property-commercial")),
+  "model-exit-luxury-car": dynamic(() => import("@/modules/template-luxury-car-exit-tour")),
 };
 
 export function getTemplateRunner(slug) {

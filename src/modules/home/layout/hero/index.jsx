@@ -38,12 +38,12 @@ export default function Hero({ videos = [] }) {
         </div>
 
         {/* Heading */}
-        <h1 className="max-w-5xl text-center tracking-wide font-bold leading-tight text-4xl sm:text-5xl lg:text-6xl">
+        <h1 className="max-w-4xl text-center tracking-wide font-bold leading-tight text-4xl sm:text-5xl lg:text-6xl">
           Create{" "}
           <span className="bg-[#c7f038] italic px-2 py-1 rounded text-black">
             Winning
           </span>{" "}
-          Ads in Minutes.
+          Real Estate Ads in Minutes.
         </h1>
 
         {/* Description */}
@@ -56,12 +56,12 @@ export default function Hero({ videos = [] }) {
         <div className="pt-6 flex flex-col sm:flex-row gap-3 sm:gap-4 items-center justify-center">
           <Link href="/auth/signup">
             <span className="inline-flex items-center justify-center text-black bg-[#c7f038] px-6 py-4 hover:opacity-90 rounded-lg shadow-sm font-bold">
-              Get Started Now
+              Start Now
             </span>
           </Link>
 
           <span className="text-xs text-neutral-500 text-center">
-            No credit card · Free to start
+            Get Started with your ads
           </span>
         </div>
 

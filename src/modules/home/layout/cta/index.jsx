@@ -7,7 +7,7 @@ export default function Cta() {
       <div className="flex flex-col items-center justify-center gap-4 px-6">
         <div className="bg-[#c7f038] px-5 py-1 rounded-full">
           <span className="uppercase font-bold text-xs sm:text-sm text-black">
-            Free Demo
+            Get Started
           </span>
         </div>
 
@@ -26,10 +26,6 @@ export default function Cta() {
           >
             Get Started Here
           </Link>
-
-          <span className="text-neutral-500 text-xs sm:text-sm text-center">
-            No commitment, We confirm within 24 hrs
-          </span>
         </div>
 
         <div className="w-full overflow-hidden">

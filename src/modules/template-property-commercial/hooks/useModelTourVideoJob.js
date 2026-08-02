@@ -3,14 +3,18 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
-const JOB_ID_KEY = "model-tour-job-id";
-
 // Background n8n video-generation job — split out of what used to be the
 // full-screen ModelTourGeneration component so the runner can keep polling
 // while the user is already on the Captions & Logo step picking styles.
 // Same resume-on-refresh contract as before: a jobId in sessionStorage +
 // GET /jobs/:jobId to reattach if the tab reloads mid-generation.
-export function useModelTourVideoJob() {
+//
+// `storageKey` defaults to the original model-tour (real estate) key —
+// other templates sharing this hook (e.g. luxury-car-exit) must pass their
+// own distinct key so an in-flight job in one template's tab doesn't get
+// picked up as a resume target by another template's tab.
+export function useModelTourVideoJob(storageKey = "model-tour-job-id") {
+  const JOB_ID_KEY = storageKey;
   const [phase, setPhase] = useState("idle"); // idle | loading | error | done
   const [error, setError] = useState(null);
   const [resultUrl, setResultUrl] = useState(null);

@@ -3,16 +3,18 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import TemplateCard from "@/modules/dashboard/components/template-card";
+import CreativeTemplateCard from "@/modules/dashboard/components/creative-template-card";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Video, Pencil, ArrowRight } from "lucide-react";
+import { Video, Pencil, Wand2 } from "lucide-react";
 import { Search } from "lucide-react";
 import { useUser } from "@/hooks/use-user";
 import { getAllTemplates } from "@/lib/templates";
+import { getAllCreativeTemplates } from "@/lib/creative-templates";
 
 // Every template's own route (dedicated flow via `href`, or the generic
 // /dashboard/template/[slug] runner) lives in the central registry —
@@ -23,13 +25,20 @@ const REAL_ESTATE_TEMPLATES = getAllTemplates().map((t) => ({
   href: t.href || `/dashboard/template/${t.slug}`,
 }));
 
+const CREATIVE_TEMPLATES = getAllCreativeTemplates();
+
 export default function DashboardPage() {
   const [templateModalOpen, setTemplateModalOpen] = useState(false);
+  const [creativeModalOpen, setCreativeModalOpen] = useState(false);
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const [creativeQuery, setCreativeQuery] = useState("");
   const { user, profile } = useUser();
   const filteredTemplates = REAL_ESTATE_TEMPLATES.filter((t) =>
     t.title.toLowerCase().includes(query.toLowerCase()),
+  );
+  const filteredCreativeTemplates = CREATIVE_TEMPLATES.filter((t) =>
+    t.title.toLowerCase().includes(creativeQuery.toLowerCase()),
   );
 
   const displayName =
@@ -46,6 +55,13 @@ export default function DashboardPage() {
       color: "bg-black text-[#c7f038]",
     },
     {
+      title: "Creative Ad Generator",
+      description: "Build creative static real estate ads that grab user's attention.",
+      href: null,
+      icon: Wand2,
+      color: "bg-black text-[#c7f038]",
+    },
+    {
       title: "Edit Your Reels",
       description: "Fine-tune and download your generated reels",
       href: "/dashboard/edit",
@@ -56,9 +72,9 @@ export default function DashboardPage() {
 
   return (
     <div className="h-full flex items-center justify-center bg-linear-to-b from-[#fafbfc] to-neutral-50">
-      <section className="w-full max-w-2xl px-4 sm:pt-0 pt-4">
+      <section className="w-full max-w-5xl flex flex-col items-center px-4 sm:pt-0 pt-4">
         {/* Greeting */}
-        <div className="mb-6 sm:mb-8">
+        <div className="mb-6 sm:mb-8 max-w-2xl">
           <h1 className="text-2xl font-switzer sm:text-4xl font-light text-center tracking-tight text-neutral-900">
             Hi {firstName}, Let&apos;s do something remarkable today.
           </h1>
@@ -68,7 +84,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Actions */}
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-3 gap-4">
           {actions.map((action) => {
             const Icon = action.icon;
 
@@ -91,6 +107,18 @@ export default function DashboardPage() {
                   key={action.title}
                   className="group text-left w-full"
                   onClick={() => setTemplateModalOpen(true)}
+                >
+                  {content}
+                </button>
+              );
+            }
+
+            if (action.title === "Creative Ad Generator") {
+              return (
+                <button
+                  key={action.title}
+                  className="group text-left w-full"
+                  onClick={() => setCreativeModalOpen(true)}
                 >
                   {content}
                 </button>
@@ -163,6 +191,72 @@ export default function DashboardPage() {
               </div>
 
               {filteredTemplates.length === 0 && (
+                <div className="text-center text-sm text-neutral-500 py-20">
+                  No templates found
+                </div>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Creative Ad Template Modal */}
+      <Dialog open={creativeModalOpen} onOpenChange={setCreativeModalOpen}>
+        <DialogContent
+          className="max-w-6xl! w-[95vw] h-[90vh] flex flex-col rounded-3xl p-0 gap-0 overflow-hidden"
+          onWheel={(e) => e.stopPropagation()}
+        >
+          {/* HEADER */}
+          <DialogHeader className="px-8 py-6 border-b shrink-0">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <DialogTitle className="text-2xl font-bold">
+                  Select a Template
+                </DialogTitle>
+                <p className="text-sm text-neutral-500">
+                  Click to get started
+                </p>
+              </div>
+
+              {/* COUNT */}
+              <span className="hidden md:flex bg-[#c7f038] px-4 py-2 rounded-full text-xs font-bold uppercase">
+                {CREATIVE_TEMPLATES.filter(t => !t.comingSoon).length} Templates
+              </span>
+            </div>
+
+            {/* SEARCH */}
+            <div className="mt-4 relative">
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400"
+                size={16}
+              />
+              <input
+                value={creativeQuery}
+                onChange={(e) => setCreativeQuery(e.target.value)}
+                placeholder="Search templates..."
+                className="w-full h-11 rounded-2xl border border-neutral-200 bg-neutral-50 pl-10 pr-4 text-sm outline-none focus:border-[#c7f038]focus:bg-white"
+              />
+            </div>
+          </DialogHeader>
+
+          {/* BODY */}
+          <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
+            <div className="p-8">
+              <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-4 gap-4">
+                {filteredCreativeTemplates.map((template) => (
+                  <CreativeTemplateCard
+                    key={template.title}
+                    template={template}
+                    onClick={() => {
+                      if (!template.href) return;
+                      setCreativeModalOpen(false);
+                      router.push(template.href);
+                    }}
+                  />
+                ))}
+              </div>
+
+              {filteredCreativeTemplates.length === 0 && (
                 <div className="text-center text-sm text-neutral-500 py-20">
                   No templates found
                 </div>
