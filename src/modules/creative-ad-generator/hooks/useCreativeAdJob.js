@@ -7,9 +7,12 @@ import { toast } from "sonner";
 // single-round-trip creative-ad generation: the backend generates its own
 // jobId (sent back as a "started" SSE event) rather than the client minting
 // one up front, since there's no separate script/edit checkpoint here.
-const JOB_ID_KEY = "creative-ad-job-id";
+//
+// Namespaced by templateKey so an in-flight job on one template's page
+// doesn't get mistakenly resumed on another template's page.
+export function useCreativeAdJob(templateKey) {
+  const jobIdKey = `creative-ad-job-id:${templateKey}`;
 
-export function useCreativeAdJob() {
   const [phase, setPhase] = useState("idle"); // idle | loading | error | done
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
@@ -27,7 +30,7 @@ export function useCreativeAdJob() {
         if (abortedRef.current) return;
         if (res.status === 404) {
           try {
-            sessionStorage.removeItem(JOB_ID_KEY);
+            sessionStorage.removeItem(jobIdKey);
           } catch (_) {}
           setPhase("idle");
           return;
@@ -38,7 +41,7 @@ export function useCreativeAdJob() {
         if (!job) throw new Error("Resume failed: invalid job response");
         if (job.status === "done") {
           try {
-            sessionStorage.removeItem(JOB_ID_KEY);
+            sessionStorage.removeItem(jobIdKey);
           } catch (_) {}
           setResultUrl(job.resultUrl);
           setPhase("done");
@@ -46,7 +49,7 @@ export function useCreativeAdJob() {
         }
         if (job.status === "error") {
           try {
-            sessionStorage.removeItem(JOB_ID_KEY);
+            sessionStorage.removeItem(jobIdKey);
           } catch (_) {}
           setPhase("error");
           setError(job.error || "Generation failed");
@@ -104,14 +107,14 @@ export function useCreativeAdJob() {
               const event = JSON.parse(line.slice(6));
               if (event.type === "started" && event.jobId) {
                 try {
-                  sessionStorage.setItem(JOB_ID_KEY, event.jobId);
+                  sessionStorage.setItem(jobIdKey, event.jobId);
                 } catch (_) {}
               } else if (event.type === "generating" || event.type === "processing") {
                 setMessage(event.message || null);
               } else if (event.type === "done") {
                 reachedTerminal = true;
                 try {
-                  sessionStorage.removeItem(JOB_ID_KEY);
+                  sessionStorage.removeItem(jobIdKey);
                 } catch (_) {}
                 setResultUrl(event.resultUrl);
                 setPhase("done");
@@ -119,7 +122,7 @@ export function useCreativeAdJob() {
               } else if (event.type === "error") {
                 reachedTerminal = true;
                 try {
-                  sessionStorage.removeItem(JOB_ID_KEY);
+                  sessionStorage.removeItem(jobIdKey);
                 } catch (_) {}
                 setPhase("error");
                 setError(event.message || "Generation failed");
@@ -139,7 +142,7 @@ export function useCreativeAdJob() {
       if (err.name === "AbortError" || abortedRef.current) return;
       console.error("[CreativeAds] Generation error:", err);
       try {
-        sessionStorage.removeItem(JOB_ID_KEY);
+        sessionStorage.removeItem(jobIdKey);
       } catch (_) {}
       setPhase("error");
       setError(err.message || "Generation failed");
@@ -155,7 +158,7 @@ export function useCreativeAdJob() {
       abortControllerRef.current?.abort();
     } catch (_) {}
     try {
-      sessionStorage.removeItem(JOB_ID_KEY);
+      sessionStorage.removeItem(jobIdKey);
     } catch (_) {}
     setPhase("idle");
   };
@@ -165,7 +168,7 @@ export function useCreativeAdJob() {
   const resumeIfInFlight = () => {
     let existingJobId = null;
     try {
-      existingJobId = sessionStorage.getItem(JOB_ID_KEY);
+      existingJobId = sessionStorage.getItem(jobIdKey);
     } catch (_) {}
     if (!existingJobId) return false;
     setPhase("loading");

@@ -11,7 +11,11 @@ import { useCreativeAdJob } from "./hooks/useCreativeAdJob";
 // Single-stage creative-ad template — one form, one n8n round-trip via
 // /api/creative-ads/generate, no multi-step wizard (unlike the video
 // templates) since a static creative is one image, not a multi-scene build.
-const TEMPLATE_KEY = "art-of-living";
+//
+// Generic across every template in src/lib/creative-templates.js: the
+// `template` prop supplies the copy (title, description, form placeholders),
+// while the n8n workflow behind `template.templateKey` supplies the actual
+// design being replicated. Adding template #4 needs no changes here.
 const MAX_PROPERTY_IMAGES = 4;
 
 // Property photos + logo both land in the shared Asset library through the
@@ -54,25 +58,29 @@ function ImageSlot({ image, onRemove }) {
   );
 }
 
-export default function ArtOfLivingCreative() {
+export default function CreativeAdGenerator({ template }) {
+  const form = template.form || {};
+
   const [propertyName, setPropertyName] = useState("");
   const [headline, setHeadline] = useState("");
   const [subheading, setSubheading] = useState("");
-  const [ctaText, setCtaText] = useState("Book a Visit");
+  const [ctaText, setCtaText] = useState(form.ctaDefault || "");
   const [tonality, setTonality] = useState("");
+  const [location, setLocation] = useState("");
+  const [additionalDetails, setAdditionalDetails] = useState("");
   const [propertyImages, setPropertyImages] = useState([]);
   const [logo, setLogo] = useState(null);
   const [hydrated, setHydrated] = useState(false);
 
   const propertyInputRef = useRef(null);
   const logoInputRef = useRef(null);
-  const job = useCreativeAdJob();
+  const job = useCreativeAdJob(template.templateKey);
 
   useEffect(() => {
     job.resumeIfInFlight();
     setHydrated(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [template.templateKey]);
 
   const addPropertyImages = async (files) => {
     const remaining = MAX_PROPERTY_IMAGES - propertyImages.length;
@@ -116,12 +124,14 @@ export default function ArtOfLivingCreative() {
 
   const handleGenerate = () => {
     job.start({
-      templateKey: TEMPLATE_KEY,
+      templateKey: template.templateKey,
       propertyName: propertyName.trim(),
       headline: headline.trim(),
       subheading: subheading.trim(),
-      ctaText: ctaText.trim() || "Learn More",
+      ctaText: ctaText.trim(),
       tonality: tonality.trim(),
+      location: location.trim(),
+      additionalDetails: additionalDetails.trim(),
       propertyImageUrls: uploadedPropertyImages.map((img) => img.r2Url),
       ...(logo?.r2Url ? { logoUrl: logo.r2Url } : {}),
     });
@@ -131,8 +141,10 @@ export default function ArtOfLivingCreative() {
     setPropertyName("");
     setHeadline("");
     setSubheading("");
-    setCtaText("Book a Visit");
+    setCtaText(form.ctaDefault || "");
     setTonality("");
+    setLocation("");
+    setAdditionalDetails("");
     setPropertyImages([]);
     setLogo(null);
     job.abort();
@@ -199,18 +211,23 @@ export default function ArtOfLivingCreative() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 flex flex-col gap-8 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-medium">Art of Living</h1>
-        <p className="text-sm text-neutral-500 mt-1">A premium editorial-style static ad for your property.</p>
+        <h1 className="text-2xl font-medium">{template.title}</h1>
+        {template.description && <p className="text-sm text-neutral-500 mt-1">{template.description}</p>}
       </div>
 
       <div className="flex flex-col gap-4">
         <div>
           <Label htmlFor="propertyName">Property Name</Label>
-          <Input id="propertyName" value={propertyName} onChange={(e) => setPropertyName(e.target.value)} placeholder="Skyline Residences" />
+          <Input
+            id="propertyName"
+            value={propertyName}
+            onChange={(e) => setPropertyName(e.target.value)}
+            placeholder={form.propertyNamePlaceholder}
+          />
         </div>
         <div>
           <Label htmlFor="headline">Headline</Label>
-          <Input id="headline" value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder="Where Luxury Meets Living" />
+          <Input id="headline" value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder={form.headlinePlaceholder} />
         </div>
         <div>
           <Label htmlFor="subheading">Subheading (optional)</Label>
@@ -218,20 +235,38 @@ export default function ArtOfLivingCreative() {
             id="subheading"
             value={subheading}
             onChange={(e) => setSubheading(e.target.value)}
-            placeholder="3 & 4 BHK Residences in the Heart of the City"
+            placeholder={form.subheadingPlaceholder}
           />
         </div>
         <div>
           <Label htmlFor="ctaText">Call to Action</Label>
-          <Input id="ctaText" value={ctaText} onChange={(e) => setCtaText(e.target.value)} placeholder="Book a Visit" />
+          <Input id="ctaText" value={ctaText} onChange={(e) => setCtaText(e.target.value)} placeholder={form.ctaDefault} />
         </div>
+        {form.showLocation && (
+          <div>
+            <Label htmlFor="location">Location (optional)</Label>
+            <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={form.locationPlaceholder} />
+          </div>
+        )}
+        {form.showAdditionalDetails && (
+          <div>
+            <Label htmlFor="additionalDetails">{form.additionalDetailsLabel || "Additional Details (optional)"}</Label>
+            <Textarea
+              id="additionalDetails"
+              value={additionalDetails}
+              onChange={(e) => setAdditionalDetails(e.target.value)}
+              placeholder={form.additionalDetailsPlaceholder}
+              rows={2}
+            />
+          </div>
+        )}
         <div>
           <Label htmlFor="tonality">Tonality (optional)</Label>
           <Textarea
             id="tonality"
             value={tonality}
             onChange={(e) => setTonality(e.target.value)}
-            placeholder="warm, aspirational, editorial"
+            placeholder={form.tonalityPlaceholder}
             rows={2}
           />
         </div>
