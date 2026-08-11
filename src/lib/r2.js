@@ -9,7 +9,7 @@ import { NodeHttpHandler } from "@smithy/node-http-handler";
  *   R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME
  *
  * requestHandler timeouts are raised well above the SDK default (which is
- * tuned for small API calls) — rendered video buffers can take a while to
+ * tuned for small API calls) - rendered video buffers can take a while to
  * push over the wire, and the default socket timeout was closing the
  * connection mid-upload (surfaced as a `write EPIPE`/TimeoutError).
  */
@@ -29,7 +29,7 @@ export const s3 = new S3Client({
 
 export const BUCKET = process.env.R2_BUCKET_NAME;
 
-// R2 public base URL — set R2_PUBLIC_URL in .env after enabling public access on the bucket
+// R2 public base URL - set R2_PUBLIC_URL in .env after enabling public access on the bucket
 export const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || null;
 
 /**
@@ -52,7 +52,7 @@ export async function getAssetUrl(key, expiresIn = 3600, { contentDisposition } 
 
 /**
  * Frontend hooks (e.g. useAvatars) hand back relative `/api/r2?key=...` proxy
- * URLs so <img> tags can load them same-origin — but that relative path is
+ * URLs so <img> tags can load them same-origin - but that relative path is
  * meaningless to a third-party API (fal.ai etc.) fetching it server-side.
  * Same fix already applied ad-hoc in luxury-car-exit/action-reel/news-anchor/
  * comedy-reel/home-tour's generate-pipeline routes; centralized here so the

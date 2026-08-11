@@ -3,11 +3,11 @@ import { cookies } from "next/headers";
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
 const AUTH_COOKIE_NAME = "auth_token";
 
-// GET /api/avatars/re — thin SSE pass-through to thumbpin-backend's
+// GET /api/avatars/re - thin SSE pass-through to thumbpin-backend's
 // /avatars/re (see thumbpin-backend/src/modules/re-avatars), which now owns
 // the actual R2 scan + in-memory cache + progressive streaming. This route
 // used to do all of that itself (list+HEAD+manifest-fetch straight from R2
-// on every request, no cache) — moved backend-side so it can read req.user
+// on every request, no cache) - moved backend-side so it can read req.user
 // directly from its own requireAuth instead of paying an extra auth
 // round-trip, and so the shared/prebuilt library it scans can be cached
 // once for every user instead of rescanned per request.
@@ -33,7 +33,7 @@ export async function GET() {
     });
   }
 
-  // Pipe the backend's SSE stream straight through — no buffering, no
+  // Pipe the backend's SSE stream straight through - no buffering, no
   // re-parsing, so the progressive one-card-at-a-time behavior survives
   // the extra hop.
   return new Response(backendRes.body, {

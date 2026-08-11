@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 const STEP_LABELS = ["Add Assets", "Script", "Finalize", "Captions & Logo"];
 
 // This template is a straight clone of template-property-commercial's n8n
-// model-tour pipeline — same SiteForm fields, same finalize/post-process UI,
+// model-tour pipeline - same SiteForm fields, same finalize/post-process UI,
 // same shared components/backend endpoints. The only thing that differs is
 // which n8n workflow generates the script: we send `template: "luxury-car-exit"`
 // in modelTourScriptRequest, and the backend (model-tour.service.ts's
@@ -28,7 +28,7 @@ const STEP_LABELS = ["Add Assets", "Script", "Finalize", "Captions & Logo"];
 // Video-render and splitter/voice-change stages stay shared infra.
 const MODEL_TOUR_CLASSIFICATIONS = new Set(["residential", "commercial", "plotted"]);
 
-// Own sessionStorage keys — distinct from template-property-commercial's so
+// Own sessionStorage keys - distinct from template-property-commercial's so
 // the two templates don't clobber each other's in-progress form/job state
 // if a user has both open (e.g. in different tabs).
 const FORM_STATE_KEY = "luxury-car-exit-tour-form-state";

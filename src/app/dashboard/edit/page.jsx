@@ -44,7 +44,7 @@ export default function EditPage() {
         compositionProps={compositionProps}
         onExit={() => {
           // The draft itself (overlays/music/cuts/trim) stays saved per-video
-          // in localStorage — leaving the editor isn't "discard", it's
+          // in localStorage - leaving the editor isn't "discard", it's
           // "pause". Back returns to the drafts dashboard on this same page,
           // where the video shows up as a card to resume later.
           sessionStorage.removeItem(COMPOSITION_STORAGE_KEY);

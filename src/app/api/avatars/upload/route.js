@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
 const AUTH_COOKIE_NAME = "auth_token";
 
-// Thin proxy to thumbpin-backend's POST /avatars/upload — the common avatar
+// Thin proxy to thumbpin-backend's POST /avatars/upload - the common avatar
 // collection upload endpoint every template's ModelSelector posts to.
 export async function POST(request) {
   const cookieStore = await cookies();

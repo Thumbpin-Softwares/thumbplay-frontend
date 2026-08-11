@@ -5,7 +5,7 @@ import { getAssetUrl } from "@/lib/r2";
  * GET /api/r2?key=users/{userId}/...
  *
  * Auth-checks ownership, then redirects to a presigned R2 URL (or CDN URL for
- * public assets). The client fetches bytes directly from Cloudflare edge —
+ * public assets). The client fetches bytes directly from Cloudflare edge -
  * no proxying through Vercel.
  */
 export async function GET(request) {

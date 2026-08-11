@@ -5,7 +5,7 @@ const ADMIN_COOKIE_NAME = "admin_token";
 
 /**
  * Server-side only. Mirrors lib/backend-session.js but for the separate
- * admin_token cookie/secret — forwards it as a raw Cookie header since the
+ * admin_token cookie/secret - forwards it as a raw Cookie header since the
  * browser never has a cookie scoped to the backend's own domain.
  */
 export async function authedAdminBackendGet(path) {

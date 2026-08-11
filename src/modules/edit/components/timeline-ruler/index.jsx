@@ -33,7 +33,7 @@ function SplitMarker({ frame, durationInFrames, containerRef, minFrame, maxFrame
       onDoubleClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemove(); }}
       className="absolute top-0 bottom-0 w-2.5 -ml-1.25 z-20 cursor-ew-resize flex justify-center group"
       style={{ left: `${(frame / durationInFrames) * 100}%` }}
-      title="Drag to adjust — double-click to remove"
+      title="Drag to adjust - double-click to remove"
     >
       <div className="w-0.5 h-full bg-neutral-900 group-hover:bg-destructive transition-colors" />
     </div>
@@ -174,8 +174,8 @@ export function Timeline({
 
   // Cut tool: split points are ephemeral (frame positions on the *current*,
   // already-cut timeline) used only to divide it into deletable segments.
-  // They reset whenever the timeline's length changes — e.g. right after a
-  // delete ripples everything shorter — since old positions no longer apply.
+  // They reset whenever the timeline's length changes - e.g. right after a
+  // delete ripples everything shorter - since old positions no longer apply.
   const [splitPoints, setSplitPoints] = useState([]);
   const [selectedSegmentIdx, setSelectedSegmentIdx] = useState(null);
   const [prevDurationForCut, setPrevDurationForCut] = useState(durationInFrames);
@@ -209,7 +209,7 @@ export function Timeline({
     if (!tooClose) setSplitPoints((prev) => [...prev, f].sort((a, b) => a - b));
   };
 
-  // Blade/razor tool: split exactly at the current playhead — no need to
+  // Blade/razor tool: split exactly at the current playhead - no need to
   // eyeball a click on the ruler (or "watch" the section) to find the spot,
   // just scrub the playhead there first, like Premiere/iMovie's razor tool.
   const handleSplitAtPlayhead = () => addSplitPoint(Math.round(frame));
@@ -228,7 +228,7 @@ export function Timeline({
     setSelectedSegmentIdx(null);
   };
 
-  // Nearest split point to the playhead, within snapping distance — lets the
+  // Nearest split point to the playhead, within snapping distance - lets the
   // toolbar button remove it without having to grab the thin marker by hand.
   const splitAtPlayheadIdx = (() => {
     let bestIdx = -1;
@@ -458,7 +458,7 @@ export function Timeline({
                     className="absolute inset-y-0 bg-black/10 pointer-events-none"
                     style={{ left: `${trimOutPct}%`, right: 0 }}
                   />
-                  {/* Waveform — rendered only within trim region */}
+                  {/* Waveform - rendered only within trim region */}
                   <Waveform
                     peaks={peaks}
                     loading={waveformLoading}
@@ -471,7 +471,7 @@ export function Timeline({
             </div>
           )}
 
-          {/* Cut track row — click to split, click a clip to select it for deletion */}
+          {/* Cut track row - click to split, click a clip to select it for deletion */}
           {showCut && durationInFrames > 0 && (
             <div className="relative h-20 bg-white">
               {cutSegments.map((seg, idx) => (
@@ -496,7 +496,7 @@ export function Timeline({
                   </span>
                 </div>
               ))}
-              {/* Split markers — draggable to nudge, double-click to remove */}
+              {/* Split markers - draggable to nudge, double-click to remove */}
               {splitPoints.map((sp, idx) => (
                 <SplitMarker
                   key={sp}

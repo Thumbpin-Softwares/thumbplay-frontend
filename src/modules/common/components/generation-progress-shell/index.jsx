@@ -4,7 +4,7 @@ import { Loader2, CheckCircle2, AlertCircle, RotateCcw, Download } from "lucide-
 import { Button } from "@/components/ui/button";
 
 /**
- * Shared presentational shell for every pipeline's "generating…" screen — a
+ * Shared presentational shell for every pipeline's "generating…" screen - a
  * 9:16 mobile-shaped frame with a single centered loader/result state inside.
  * This is the ONE place the visual design of the generate step lives; every
  * pipeline's GenerationProgress component keeps its own state machine but
@@ -23,7 +23,7 @@ export function GenerationProgressShell({
   doneText = "Your reel is ready!",
   downloadText = "Download reel",
   openEditorText = "Open in editor",
-  footerText = "Don't close this tab — refreshing is safe, we'll pick up right where we left off.",
+  footerText = "Don't close this tab - refreshing is safe, we'll pick up right where we left off.",
 }) {
   const isGenerating = phase !== "error" && phase !== "done";
 

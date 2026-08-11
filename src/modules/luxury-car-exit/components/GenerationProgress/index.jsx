@@ -6,7 +6,7 @@ import { useGenerationPipeline } from "@/modules/common/hooks/use-generation-pip
 import { GenerationProgressShell } from "@/modules/common/components/generation-progress-shell";
 
 /**
- * GenerationProgress for the Luxury Car Exit pipeline — 2-part master-template
+ * GenerationProgress for the Luxury Car Exit pipeline - 2-part master-template
  * architecture (same shape as action-reel/comedy-reel: two ~15s hard-cut
  * Seedance clips, each with its own baked dialogue audio), rendered via the
  * shared "ActionReel" Remotion composition, then rendered to a final
@@ -14,7 +14,7 @@ import { GenerationProgressShell } from "@/modules/common/components/generation-
  *
  * All the actual step-by-step orchestration (splitting → voices → video →
  * combining → rendering → done, resume-by-jobId, abort, retry) lives in
- * useGenerationPipeline — this file only supplies what's different about
+ * useGenerationPipeline - this file only supplies what's different about
  * this template: its form fields and its 2-part composition shape.
  */
 export function GenerationProgress({

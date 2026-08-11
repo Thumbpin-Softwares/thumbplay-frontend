@@ -11,7 +11,7 @@ export const useAvatars = () => {
   const [reAvatarsLoading, setReAvatarsLoading] = useState(false);
   const [reAvatarsError, setReAvatarsError] = useState(null);
 
-  // Fetch RE avatars via SSE — collections appear one by one as they're resolved
+  // Fetch RE avatars via SSE - collections appear one by one as they're resolved
   const fetchReAvatars = async () => {
     setReAvatarsLoading(true);
     setReAvatarsError(null);
@@ -67,7 +67,7 @@ export const useAvatars = () => {
     fetchReAvatars();
   }, []);
 
-  // Select an avatar collection (prebuilt mode) — max 1
+  // Select an avatar collection (prebuilt mode) - max 1
   // All images in the collection become selectedAvatars
   const selectCollection = (collection) => {
     if (selectedCollectionId === collection.id) {
@@ -75,7 +75,7 @@ export const useAvatars = () => {
       setSelectedCollectionId(null);
       setSelectedAvatars([]);
     } else {
-      // Select this collection — all its images become selectedAvatars
+      // Select this collection - all its images become selectedAvatars
       setSelectedCollectionId(collection.id);
       const avatarObjects = collection.images.map((img, i) => ({
         url: img.url,

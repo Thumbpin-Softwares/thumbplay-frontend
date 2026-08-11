@@ -21,7 +21,7 @@ function Section({ icon: Icon, title, children }) {
 
 // Replaces a scene's voiceover_audio_script by scene_chunk_id, leaving
 // everything else in the script (headers/body/gender/cost/cinematic_direction,
-// all of it) untouched — we only ever expose the voiceover line for editing.
+// all of it) untouched - we only ever expose the voiceover line for editing.
 function updateVoiceover(script, sceneId, value) {
   const storyboard = Array.isArray(script?.storyboard) ? script.storyboard : [];
   return {
@@ -33,7 +33,7 @@ function updateVoiceover(script, sceneId, value) {
 }
 
 // Review step for the residential (n8n model-tour) flow. n8n's /model-tour/script
-// call returns a big blob (webhook request echo + gender/cost/storyboard) — we
+// call returns a big blob (webhook request echo + gender/cost/storyboard) - we
 // only surface what the user should actually touch: one card per storyboard
 // scene, editing just its voiceover line. Everything else in the script is
 // carried through untouched and sent back as-is on Generate.
@@ -42,9 +42,9 @@ export function ModelTourFinalize({ images = [], selectedAvatars = [], script, o
   const storyboard = Array.isArray(script?.storyboard) ? script.storyboard : [];
 
   // Local text state per scene so typing doesn't get clobbered by a
-  // same-render onChange round-trip — committed to the parent's script on
+  // same-render onChange round-trip - committed to the parent's script on
   // every keystroke, but the textarea itself reads from this map. The cap
-  // is the length of n8n's original voiceover line — fixed at that point
+  // is the length of n8n's original voiceover line - fixed at that point
   // even if the user clears the field and retypes shorter/longer drafts.
   const [drafts, setDrafts] = useState(() =>
     Object.fromEntries(storyboard.map((s) => [s.scene_chunk_id, s.voiceover_audio_script ?? ""]))
@@ -53,7 +53,7 @@ export function ModelTourFinalize({ images = [], selectedAvatars = [], script, o
     Object.fromEntries(storyboard.map((s) => [s.scene_chunk_id, (s.voiceover_audio_script ?? "").length]))
   );
   // Every keystroke round-trips through the parent's onChange and comes back
-  // down as a new `script` object — that's not a "new script arrived from
+  // down as a new `script` object - that's not a "new script arrived from
   // outside" event, it's an echo of our own edit, and must not re-derive
   // maxChars from the (possibly just-shortened) current text. lastEmitted
   // tracks what we ourselves last sent up, so the resync below only fires

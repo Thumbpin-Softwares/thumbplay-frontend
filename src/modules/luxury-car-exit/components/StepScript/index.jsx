@@ -24,7 +24,7 @@ import { PROPERTY_TYPE_GROUPS, getPropertyType, DEFAULT_PROPERTY_TYPE } from "@/
 import { CREDIT_ACTIONS } from "@/lib/credit-costs";
 
 // This pipeline has no dedicated CREDIT_ACTIONS entry of its own (no client-
-// side affordability check exists here) — reusing the flat script-generation
+// side affordability check exists here) - reusing the flat script-generation
 // estimate other templates show, since actual infra cost is similarly tiny.
 const ESTIMATED_CREDIT_COST = CREDIT_ACTIONS.model_tour_script_generation.cost;
 
@@ -49,7 +49,7 @@ const ChevronDown = () => (
 );
 
 /**
- * StepScript — Step 1 for the Luxury Car Exit pipeline.
+ * StepScript - Step 1 for the Luxury Car Exit pipeline.
  *
  * Simplified from veo-long-ad/StepScript:
  * - Keeps: manual paste + AI Q&A form, language selector, voice selector + preview
@@ -89,7 +89,7 @@ export function StepScript({ onBack, onGenerate }) {
     setVoiceSettings({ ...(ELEVENLABS_VOICE_SETTINGS[voiceId] || ELEVENLABS_VOICE_SETTINGS[ELEVENLABS_VOICES[0].id]) });
   };
 
-  // Custom voice (record or upload) — when present, this file is uploaded and
+  // Custom voice (record or upload) - when present, this file is uploaded and
   // sent directly to Seedance as the reference audio for both parts, instead
   // of the prebuilt voice above (see GenerationProgress/generate-pipeline).
   const [customVoiceTab, setCustomVoiceTab] = useState("record");
@@ -251,7 +251,7 @@ export function StepScript({ onBack, onGenerate }) {
       setScriptWordCount(data.wordCount || 0);
       setScriptEstDuration(data.estimatedDuration || 0);
       setShowAiForm(false);
-      toast.success(`Script ready — ${data.wordCount} words · ~${data.estimatedDuration}s`);
+      toast.success(`Script ready - ${data.wordCount} words · ~${data.estimatedDuration}s`);
     } catch (err) {
       toast.error("Script generation failed", { description: err.message });
     } finally {
@@ -411,7 +411,7 @@ export function StepScript({ onBack, onGenerate }) {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      Script generated — {scriptWordCount} words · ~{scriptEstDuration}s
+                      Script generated - {scriptWordCount} words · ~{scriptEstDuration}s
                     </div>
                     <div className="flex items-center gap-3">
                       {!showAiForm && (

@@ -3,7 +3,7 @@
 import { toast } from "sonner";
 import { CheckCircle2, XCircle, Info, Loader2, AlertTriangle } from "lucide-react";
 
-// Template-pipeline-branded toast presets — same black/lime look as the edit
+// Template-pipeline-branded toast presets - same black/lime look as the edit
 // page's editNotify (client/src/modules/edit/components/notification), so
 // every generation pipeline's notifications look visually consistent. Call
 // these instead of the raw `toast` import from "sonner".

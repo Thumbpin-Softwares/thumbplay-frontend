@@ -21,7 +21,7 @@ const STEP_LABELS = ["Add Assets", "Script", "Finalize", "Captions & Logo"];
 
 // A crashed/unreachable backend can surface here as an HTML error page
 // rather than JSON (e.g. "Unexpected token '<', \"<!DOCTYPE \"..." from a
-// bare res.json() call) — parse defensively so that shows up as a clean
+// bare res.json() call) - parse defensively so that shows up as a clean
 // fallback instead of a raw SyntaxError bubbling into the UI.
 async function parseJsonSafe(res) {
   try {
@@ -31,19 +31,19 @@ async function parseJsonSafe(res) {
   }
 }
 
-// All three classifications route through the n8n model-tour pipeline now —
+// All three classifications route through the n8n model-tour pipeline now -
 // n8n switches its master prompt internally based on `type`. "plotted" is
 // shown to the user as "Land" (see SiteForm), the value itself is unchanged.
 const MODEL_TOUR_CLASSIFICATIONS = new Set(["residential", "commercial", "plotted"]);
 
 // Persists the Add Assets / Script form (images already have permanent R2
 // URLs by the time they're in state, avatar selection, and scriptValues) so
-// a refresh doesn't lose progress. Only covers filling out the form —
+// a refresh doesn't lose progress. Only covers filling out the form -
 // cleared the moment generation actually starts, since the generation phase
 // has its own separate resume mechanism (jobId polling in useModelTourVideoJob).
 const FORM_STATE_KEY = "model-tour-form-state";
 
-// Property Commercial's own runner — wires the shared template pieces
+// Property Commercial's own runner - wires the shared template pieces
 // (StepCapsule, AddAssetsStep, StepScript) plus the model-tour-specific
 // finalize/generation/post-process screens to this template's state. All
 // three classifications currently route through the n8n model-tour pipeline
@@ -67,7 +67,7 @@ export default function PropertyCommercialRunner({ template }) {
   const avatarHook = useAvatars();
 
   // Restore on mount: if a generation was already in flight, jump straight
-  // to the Captions & Logo step (the job resumes itself via jobId polling —
+  // to the Captions & Logo step (the job resumes itself via jobId polling -
   // see useModelTourVideoJob). Otherwise restore whatever the user had
   // filled in so far.
   useEffect(() => {
@@ -95,7 +95,7 @@ export default function PropertyCommercialRunner({ template }) {
 
   // Persist on every change, only once hydration has run (otherwise the
   // initial empty state would overwrite what was just restored) and only
-  // while the user is still filling out the form — not once a video job has
+  // while the user is still filling out the form - not once a video job has
   // started (frozen at whatever the form looked like right before Generate,
   // since the job itself has its own resume mechanism from that point on).
   useEffect(() => {
@@ -116,12 +116,12 @@ export default function PropertyCommercialRunner({ template }) {
     } catch (_) {}
   }, [hydrated, videoJob.phase, step, images, scriptValues, modelTourScript, avatarHook.avatarMode, avatarHook.selectedAvatars, avatarHook.selectedCollectionId]);
 
-  // Only count photos once their R2 upload has actually finished — those
+  // Only count photos once their R2 upload has actually finished - those
   // public URLs are what the script generator reads to ground its
   // image_prompts in the real property, so Continue shouldn't be reachable
   // while any are still uploading (or failed).
   //
-  // No gender pick here anymore — Commercial/Plotted (the only classification
+  // No gender pick here anymore - Commercial/Plotted (the only classification
   // that ever needed it, for Veo's native dialogue) are disabled in SiteForm
   // until their pipeline is reworked, and Residential's omni-hometour-pipeline
   // has no gender field at all.
@@ -132,20 +132,20 @@ export default function PropertyCommercialRunner({ template }) {
     avatarHook.selectedAvatars.length >= 1;
 
   // All three enabled classifications route through the model-tour pipeline
-  // (see MODEL_TOUR_CLASSIFICATIONS below) — used to gate step 3's rendering
+  // (see MODEL_TOUR_CLASSIFICATIONS below) - used to gate step 3's rendering
   // and capsule visibility against the generic StepFinalize/StepGeneration
   // fallback, which still only ever reaches its own step 3.
   const isModelTourFlow = MODEL_TOUR_CLASSIFICATIONS.has(scriptValues.propertyClassification);
 
-  // How far the capsule lets you click ahead — driven by which steps
+  // How far the capsule lets you click ahead - driven by which steps
   // actually have data behind them, not just how far you've clicked before.
   // Step 1 (Script) needs Add Assets' data (isValid); step 2 (Finalize)
   // additionally needs a generated script/storyboard to show; step 3
-  // (Captions & Logo) unlocks once a video job has been started at all —
+  // (Captions & Logo) unlocks once a video job has been started at all -
   // its own content gates further on the job actually finishing.
   const dataMaxStep = videoJob.phase !== "idle" ? 3 : modelTourScript || storyboard ? 2 : isValid ? 1 : 0;
 
-  // Derived at render time, not synced into state via an effect — always
+  // Derived at render time, not synced into state via an effect - always
   // reflects whatever's finished uploading so far, no cascading setState.
   const scriptValuesWithImages = {
     ...scriptValues,
@@ -164,7 +164,7 @@ export default function PropertyCommercialRunner({ template }) {
     } catch (_) {}
   };
 
-  // Extra lock on top of the disabled button — a rapid double-click can
+  // Extra lock on top of the disabled button - a rapid double-click can
   // land before React commits the `disabled` state from setGeneratingScript,
   // so the ref is what actually guarantees only one request goes out.
   const generatingScriptRef = useRef(false);
@@ -192,11 +192,11 @@ export default function PropertyCommercialRunner({ template }) {
     }
   };
 
-  // Residential skips the generic storyboard pipeline entirely — n8n's
+  // Residential skips the generic storyboard pipeline entirely - n8n's
   // model-tour workflow does gender-detection/scripting/TTS/video, split
   // across two calls: /model-tour/script (checkpoint, synchronous, returns
   // editable JSON) and /model-tour/generate (fires the actual render).
-  // Backend only has one carpetArea/amenities slot each — Commercial's own
+  // Backend only has one carpetArea/amenities slot each - Commercial's own
   // fields (shopType/shopBuiltUpArea/footfall/brandRelationships/
   // revenuePotential) have no dedicated slot, so shopBuiltUpArea stands in
   // for carpetArea and the rest get folded into amenities as labeled text
@@ -213,7 +213,7 @@ export default function PropertyCommercialRunner({ template }) {
 
   // Manual mode: the user already wrote the final voiceover text, so the
   // AI-guidance-only fields (landmarks/connectivity/carpetArea/amenities/
-  // tonality/vibe) are meaningless — send just what's still needed to
+  // tonality/vibe) are meaningless - send just what's still needed to
   // actually render the video (images, name, type/language/tierClass) plus
   // the raw script text, instead of the full AI-mode field set.
   const isManualScript = scriptValues.scriptMode === "manual";
@@ -255,7 +255,7 @@ export default function PropertyCommercialRunner({ template }) {
       if (!res.ok) throw new Error(data.error || "Script generation failed");
 
       // The n8n call behind this can run past Vercel's ~60s edge-response
-      // timeout, so /model-tour/script only starts the job (202 + jobId) —
+      // timeout, so /model-tour/script only starts the job (202 + jobId) -
       // poll the same job endpoint /generate already uses until it's done.
       const { jobId } = data;
       let script = null;
@@ -399,7 +399,7 @@ export default function PropertyCommercialRunner({ template }) {
             />
           )}
 
-          {/* Unreachable while Commercial/Plotted are disabled in SiteForm — kept
+          {/* Unreachable while Commercial/Plotted are disabled in SiteForm - kept
               for when that pipeline is reworked and re-enabled. */}
           {step === 3 && !isModelTourFlow && (
             <StepGeneration

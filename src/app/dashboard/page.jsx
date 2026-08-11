@@ -17,7 +17,7 @@ import { getAllTemplates } from "@/lib/templates";
 import { getAllCreativeTemplates } from "@/lib/creative-templates";
 
 // Every template's own route (dedicated flow via `href`, or the generic
-// /dashboard/template/[slug] runner) lives in the central registry —
+// /dashboard/template/[slug] runner) lives in the central registry -
 // this page just renders whatever's there, so adding template #51 never
 // touches this file.
 const REAL_ESTATE_TEMPLATES = getAllTemplates().map((t) => ({

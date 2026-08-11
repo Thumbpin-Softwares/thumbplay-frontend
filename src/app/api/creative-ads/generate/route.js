@@ -3,7 +3,7 @@ import { cookies } from "next/headers";
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
 const AUTH_COOKIE_NAME = "auth_token";
 
-// Thin SSE pass-through to thumbpin-backend's POST /creative-ads/generate —
+// Thin SSE pass-through to thumbpin-backend's POST /creative-ads/generate -
 // mirrors app/api/model-tour/generate/route.js.
 export async function POST(request) {
   const cookieStore = await cookies();

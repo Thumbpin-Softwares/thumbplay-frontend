@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { GenerationProgressShell } from "@/modules/common/components/generation-progress-shell";
 
-// Step 3 for every template's pipeline — takes the rendered image frames
+// Step 3 for every template's pipeline - takes the rendered image frames
 // from Finalize (imageUrl + video_action + narration per frame) and runs
 // them through the in-scene-presenter pipeline: animate (Veo), synthesize
 // narration (ElevenLabs), lip-sync the two together, then merge every frame
@@ -19,13 +19,13 @@ export function StepGeneration({ template, renderedFrames, gender, onAbort, onDo
   const [finalVideoUrl, setFinalVideoUrl] = useState(null);
 
   // hasStartedGeneration is set the INSTANT the mount-time effect below
-  // decides to fire — synchronously, not via setState. This is the actual
+  // decides to fire - synchronously, not via setState. This is the actual
   // fix for the cost leak: React state updates aren't synchronous, so if
   // this effect fires twice back-to-back (Strict Mode's dev-only
   // mount→unmount→mount, or any other accidental double-mount), a
   // state-only guard (e.g. checking `phase`) can read stale `false` on both
   // firings and let both through. A ref set before either async call starts
-  // can't have that race — the second firing always sees `true`.
+  // can't have that race - the second firing always sees `true`.
   const hasStartedGeneration = useRef(false);
 
   // Separate lock around the request itself (not just the auto-start),
@@ -75,7 +75,7 @@ export function StepGeneration({ template, renderedFrames, gender, onAbort, onDo
       onDownload={() => finalVideoUrl && window.open(finalVideoUrl, "_blank")}
       doneText="Your reel is ready!"
       downloadText="Download reel"
-      footerText="Don't close this tab — this can take a couple minutes to animate, voice, and lip-sync every clip."
+      footerText="Don't close this tab - this can take a couple minutes to animate, voice, and lip-sync every clip."
     />
   );
 }

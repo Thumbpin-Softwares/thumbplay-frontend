@@ -31,7 +31,7 @@ export async function POST(req) {
       return NextResponse.json({ error: "At least one presenter image is required" }, { status: 400 });
     }
 
-    const collectionName = (formData.get("name") || "").toString().trim() || `Presenter — ${new Date().toLocaleDateString()}`;
+    const collectionName = (formData.get("name") || "").toString().trim() || `Presenter - ${new Date().toLocaleDateString()}`;
 
     // One collectionId groups all images from this upload
     const collectionId = crypto.randomUUID();

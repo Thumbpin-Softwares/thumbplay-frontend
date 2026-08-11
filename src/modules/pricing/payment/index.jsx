@@ -109,7 +109,7 @@ function loadRazorpayScript() {
 }
 
 // ---------------------------------------------------------------------------
-// Shared payment initiator — works for both subscription plans and credit packs
+// Shared payment initiator - works for both subscription plans and credit packs
 // ---------------------------------------------------------------------------
 function useRazorpay() {
   const { data: session, refetch } = useSession();
@@ -301,7 +301,7 @@ export default function Payment() {
                 ) : (
                   <button
                     id={`plan-${plan.id}`}
-                    onClick={() => initiatePayment(plan.id, `${plan.title} Plan — ${plan.description}`)}
+                    onClick={() => initiatePayment(plan.id, `${plan.title} Plan - ${plan.description}`)}
                     disabled={isLoading || loadingItem !== null}
                     className="rounded-full bg-black py-3 text-center text-sm font-medium text-white transition-all duration-300 hover:scale-[1.03] hover:bg-neutral-800 active:scale-100 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >

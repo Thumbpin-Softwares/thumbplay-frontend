@@ -8,7 +8,7 @@ import { compressImage } from "@/utils/compress-image";
 
 const MAX_FILES = 4;
 
-// Upload Modal — creates a new real estate avatar collection.
+// Upload Modal - creates a new real estate avatar collection.
 export function UploadModal({ onClose, onUploaded }) {
   const [files, setFiles] = useState([]);
   const [collectionName, setCollectionName] = useState("");

@@ -7,9 +7,9 @@ export const ELEVENLABS_VOICES = [
 ];
 
 export const ELEVENLABS_VOICE_SETTINGS = {
-  // per-voice settings — keyed by ElevenLabs voice ID
+  // per-voice settings - keyed by ElevenLabs voice ID
   // NOTE: only `style` (emotional expressiveness) was bumped up here to fix flat
-  // delivery — stability/similarity_boost/speed are intentionally untouched, they
+  // delivery - stability/similarity_boost/speed are intentionally untouched, they
   // were already tuned and validated for natural pacing/pronunciation.
   "dVTC43Yewy5fAIcmsISI": { stability: 0.52, similarity_boost: 0.80, style: 0.63, speed: 0.94 }, // Anvi (Female)
   "K2Byg54sHB1oHegvENtI": { stability: 0.28, similarity_boost: 0.20, style: 0.30, speed: 1.20 }, // Kanika (Female)

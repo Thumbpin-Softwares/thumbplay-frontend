@@ -1,5 +1,5 @@
 // Background music uses the classic, stable `remotion` Audio (ffmpeg-based
-// extraction) rather than @remotion/media's — that package is explicitly
+// extraction) rather than @remotion/media's - that package is explicitly
 // "Experimental WebCodecs-based media tags" and would silently drop the
 // music track on codec/format edge cases some stock MP3s hit, instead of
 // erroring, which is why it looked like music "sometimes" didn't apply.
@@ -7,7 +7,7 @@ import { AbsoluteFill, Img, Sequence, OffthreadVideo, useVideoConfig, Audio } fr
 import { getOverlayFontCss, hexToRgba } from "./overlay-fonts";
 import { applyCutRanges, calcActionReelBaseDurationInFrames } from "./duration";
 
-/** Same overlay shape/rendering as SeedanceReelComposition's — see that file
+/** Same overlay shape/rendering as SeedanceReelComposition's - see that file
  * for the field reference: { id, type: "text"|"image", x, y, width, ... }. */
 function Overlay({ overlay }) {
   const style = {
@@ -50,17 +50,17 @@ function Overlay({ overlay }) {
 
 /**
  * Props:
- *   part1VideoUrl, part2VideoUrl — Seedance clips, each with baked lip-synced
+ *   part1VideoUrl, part2VideoUrl - Seedance clips, each with baked lip-synced
  *     audio already (generate_audio: true + audio_urls at generation time), so
  *     no separate <Audio> overlay is needed for dialogue, unlike music below.
- *     part2VideoUrl is optional — reopened flattened exports (see
+ *     part2VideoUrl is optional - reopened flattened exports (see
  *     EDITABLE_SOURCES' isFlatExport sources) are a single clip, so they only
  *     ever populate part1.
- *   part1Duration, part2Duration — seconds, probed client-side after generation.
- *   overlays, musicUrl/musicTrimStartSeconds/musicVolume — editor additions,
+ *   part1Duration, part2Duration - seconds, probed client-side after generation.
+ *   overlays, musicUrl/musicTrimStartSeconds/musicVolume - editor additions,
  *     same shape/behavior as SeedanceReelComposition.
  *
- * Hard cut between the two — no crossfade — matches the fast-paced UGC aesthetic.
+ * Hard cut between the two - no crossfade - matches the fast-paced UGC aesthetic.
  */
 function ReelContent({
   part1VideoUrl = "",
@@ -100,7 +100,7 @@ function ReelContent({
         </Sequence>
       )}
 
-      {/* User text/image overlays — on top of everything, full duration.
+      {/* User text/image overlays - on top of everything, full duration.
           Array order is the stacking order: later entries render on top. */}
       {overlays.length > 0 && (
         <AbsoluteFill>
@@ -132,7 +132,7 @@ function originalDurationFor(props) {
 }
 
 /**
- * Wraps ReelContent with support for the editor's Cut tool — see
+ * Wraps ReelContent with support for the editor's Cut tool - see
  * SeedanceReelComposition.jsx's identical wrapper for the full explanation of
  * how cutRanges (original-timeline frame ranges the user deleted) get
  * rippled into a shorter virtual timeline via nested Sequences.
@@ -158,7 +158,7 @@ export function ActionReelComposition({ cutRanges = [], ...rest }) {
   );
 }
 
-/** Total composition length after cuts — use this (not the raw
+/** Total composition length after cuts - use this (not the raw
  * calcActionReelBaseDurationInFrames) anywhere the actual Player/export
  * duration is needed once cuts are in play. */
 export function calcActionReelDurationInFrames({ cutRanges = [], ...rest }) {

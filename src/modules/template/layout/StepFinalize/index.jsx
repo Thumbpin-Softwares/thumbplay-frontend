@@ -28,7 +28,7 @@ const FIELD_LABELS = {
   language: "Speaker Language",
 };
 
-// Order the recap follows — anything in scriptValues not listed here still
+// Order the recap follows - anything in scriptValues not listed here still
 // renders, just appended after these in whatever order it comes in.
 const FIELD_ORDER = [
   "propertyClassification", "projectName", "projectType", "projectArea", "location",
@@ -63,18 +63,18 @@ export function StepFinalize({ template, storyboard, images = [], selectedAvatar
   const [generatingImages, setGeneratingImages] = useState(false);
   const [imagesError, setImagesError] = useState(null);
 
-  // Set synchronously the instant a request starts — state flags like
+  // Set synchronously the instant a request starts - state flags like
   // `generatingImages` aren't set until React commits the re-render, so two
   // effect firings back-to-back (Strict Mode's dev double-invoke, or any
   // other double-mount) can both pass a state-only guard before either
-  // commits. This ref is what actually stops the second fetch from firing —
+  // commits. This ref is what actually stops the second fetch from firing -
   // this project's real fal.ai cost leak on this exact effect shape.
   //
   // Because this ref guarantees the fetch below only ever fires once, ever,
-  // there is no second/newer request that could make this one "stale" — so
+  // there is no second/newer request that could make this one "stale" - so
   // its result must always be applied when it resolves. (A previous version
   // of this effect also tracked a `cancelled` flag via the cleanup function,
-  // a pattern meant to discard a superseded request's result — but combined
+  // a pattern meant to discard a superseded request's result - but combined
   // with this ref, it instead discarded the ONLY request's result during
   // Strict Mode's dev-only mount→cleanup→mount cycle: the cleanup marked
   // the one real fetch "cancelled" before it resolved, so a successful
@@ -91,7 +91,7 @@ export function StepFinalize({ template, storyboard, images = [], selectedAvatar
       try {
         // Asset-anchored: each `storyboard` frame already carries its own
         // avatar_url/reference_image_url (assigned once, when the script
-        // was generated) — nothing extra to send here.
+        // was generated) - nothing extra to send here.
         const res = await fetch(`/api/template/generate-images/${template.slug}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -107,7 +107,7 @@ export function StepFinalize({ template, storyboard, images = [], selectedAvatar
         setGeneratingImages(false);
       }
     })();
-    // Intentionally mount-only (startedRef enforces that) — images/selectedAvatars
+    // Intentionally mount-only (startedRef enforces that) - images/selectedAvatars
     // are read once at that point, not tracked as reactive deps.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [storyboard, template.slug]);

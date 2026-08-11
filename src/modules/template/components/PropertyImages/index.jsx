@@ -17,13 +17,13 @@ async function uploadToR2(file, uploadEndpoint) {
   return data.asset.url;
 }
 
-// Shared "Add Assets" tile — property/location photo upload. Used by every
+// Shared "Add Assets" tile - property/location photo upload. Used by every
 // template's Add Assets step; only the max count and helper copy differ.
 //
 // Every photo is uploaded to R2 as soon as it's added, so `images` entries
 // carry a `r2Url` (the public, permanent URL) alongside the local blob
 // preview. That `r2Url` is what downstream steps (e.g. the script generator,
-// which grounds its image_prompts in the real property photos) read —
+// which grounds its image_prompts in the real property photos) read -
 // blob URLs only exist in this browser tab and can't be sent to an API.
 export function PropertyImages({
   images,

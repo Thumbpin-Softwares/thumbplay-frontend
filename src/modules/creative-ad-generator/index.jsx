@@ -1,14 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Upload, X, Download, RotateCcw } from "lucide-react";
+import { Loader2, Upload, X, Download, RotateCcw, CheckCircle2, Circle, Building2, Images, Palette, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { useCreativeAdJob } from "./hooks/useCreativeAdJob";
 
-// Single-stage creative-ad template — one form, one n8n round-trip via
+// Single-stage creative-ad template - one form, one n8n round-trip via
 // /api/creative-ads/generate, no multi-step wizard (unlike the video
 // templates) since a static creative is one image, not a multi-scene build.
 //
@@ -58,6 +59,16 @@ function ImageSlot({ image, onRemove }) {
   );
 }
 
+function ChecklistItem({ done, children }) {
+  const Icon = done ? CheckCircle2 : Circle;
+  return (
+    <li className={`flex items-center gap-2 text-sm ${done ? "text-emerald-600" : "text-neutral-400"}`}>
+      <Icon className="w-4 h-4 shrink-0" />
+      {children}
+    </li>
+  );
+}
+
 export default function CreativeAdGenerator({ template }) {
   const form = template.form || {};
 
@@ -71,6 +82,7 @@ export default function CreativeAdGenerator({ template }) {
   const [propertyImages, setPropertyImages] = useState([]);
   const [logo, setLogo] = useState(null);
   const [hydrated, setHydrated] = useState(false);
+  const [isDraggingPhotos, setIsDraggingPhotos] = useState(false);
 
   const propertyInputRef = useRef(null);
   const logoInputRef = useRef(null);
@@ -114,13 +126,10 @@ export default function CreativeAdGenerator({ template }) {
   const uploadedPropertyImages = propertyImages.filter((img) => img.r2Url);
   const hasUploadingImages = propertyImages.some((img) => img.uploading) || logo?.uploading;
   const hasFailedImages = propertyImages.some((img) => img.error) || logo?.error;
-  const canGenerate =
-    propertyName.trim().length > 0 &&
-    headline.trim().length > 0 &&
-    uploadedPropertyImages.length >= 1 &&
-    !hasUploadingImages &&
-    !hasFailedImages &&
-    job.phase !== "loading";
+  const hasPropertyName = propertyName.trim().length > 0;
+  const hasHeadline = headline.trim().length > 0;
+  const hasPhotos = uploadedPropertyImages.length >= 1;
+  const canGenerate = hasPropertyName && hasHeadline && hasPhotos && !hasUploadingImages && !hasFailedImages && job.phase !== "loading";
 
   const handleGenerate = () => {
     job.start({
@@ -148,6 +157,12 @@ export default function CreativeAdGenerator({ template }) {
     setPropertyImages([]);
     setLogo(null);
     job.abort();
+  };
+
+  const handlePhotoDrop = (e) => {
+    e.preventDefault();
+    setIsDraggingPhotos(false);
+    if (e.dataTransfer.files?.length) addPropertyImages(e.dataTransfer.files);
   };
 
   if (!hydrated) {
@@ -209,130 +224,234 @@ export default function CreativeAdGenerator({ template }) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10 flex flex-col gap-8 animate-fade-in">
-      <div>
+    <div className="max-w-6xl mx-auto px-4 py-10 animate-fade-in">
+      <div className="mb-8">
         <h1 className="text-2xl font-medium">{template.title}</h1>
         {template.description && <p className="text-sm text-neutral-500 mt-1">{template.description}</p>}
       </div>
 
-      <div className="flex flex-col gap-4">
-        <div>
-          <Label htmlFor="propertyName">Property Name</Label>
-          <Input
-            id="propertyName"
-            value={propertyName}
-            onChange={(e) => setPropertyName(e.target.value)}
-            placeholder={form.propertyNamePlaceholder}
-          />
-        </div>
-        <div>
-          <Label htmlFor="headline">Headline</Label>
-          <Input id="headline" value={headline} onChange={(e) => setHeadline(e.target.value)} placeholder={form.headlinePlaceholder} />
-        </div>
-        <div>
-          <Label htmlFor="subheading">Subheading (optional)</Label>
-          <Input
-            id="subheading"
-            value={subheading}
-            onChange={(e) => setSubheading(e.target.value)}
-            placeholder={form.subheadingPlaceholder}
-          />
-        </div>
-        <div>
-          <Label htmlFor="ctaText">Call to Action</Label>
-          <Input id="ctaText" value={ctaText} onChange={(e) => setCtaText(e.target.value)} placeholder={form.ctaDefault} />
-        </div>
-        {form.showLocation && (
-          <div>
-            <Label htmlFor="location">Location (optional)</Label>
-            <Input id="location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder={form.locationPlaceholder} />
-          </div>
-        )}
-        {form.showAdditionalDetails && (
-          <div>
-            <Label htmlFor="additionalDetails">{form.additionalDetailsLabel || "Additional Details (optional)"}</Label>
-            <Textarea
-              id="additionalDetails"
-              value={additionalDetails}
-              onChange={(e) => setAdditionalDetails(e.target.value)}
-              placeholder={form.additionalDetailsPlaceholder}
-              rows={2}
-            />
-          </div>
-        )}
-        <div>
-          <Label htmlFor="tonality">Tonality (optional)</Label>
-          <Textarea
-            id="tonality"
-            value={tonality}
-            onChange={(e) => setTonality(e.target.value)}
-            placeholder={form.tonalityPlaceholder}
-            rows={2}
-          />
-        </div>
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6 items-start">
+        <div className="flex flex-col gap-5">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Building2 className="w-4 h-4 text-neutral-400" /> Property Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="propertyName">Property Name</Label>
+                  <Input
+                    id="propertyName"
+                    value={propertyName}
+                    onChange={(e) => setPropertyName(e.target.value)}
+                    placeholder={form.propertyNamePlaceholder}
+                    className="mt-1.5"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="ctaText">Call to Action</Label>
+                  <Input
+                    id="ctaText"
+                    value={ctaText}
+                    onChange={(e) => setCtaText(e.target.value)}
+                    placeholder={form.ctaDefault}
+                    className="mt-1.5"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="headline">Headline</Label>
+                <Input
+                  id="headline"
+                  value={headline}
+                  onChange={(e) => setHeadline(e.target.value)}
+                  placeholder={form.headlinePlaceholder}
+                  className="mt-1.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="subheading">Subheading (optional)</Label>
+                <Input
+                  id="subheading"
+                  value={subheading}
+                  onChange={(e) => setSubheading(e.target.value)}
+                  placeholder={form.subheadingPlaceholder}
+                  className="mt-1.5"
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-      <div>
-        <Label>Property Photos (1–4)</Label>
-        <div className="grid grid-cols-4 gap-3 mt-2">
-          {propertyImages.map((img) => (
-            <ImageSlot key={img.id} image={img} onRemove={() => setPropertyImages((prev) => prev.filter((i) => i.id !== img.id))} />
-          ))}
-          {propertyImages.length < MAX_PROPERTY_IMAGES && (
-            <button
-              type="button"
-              onClick={() => propertyInputRef.current?.click()}
-              className="aspect-square rounded-xl border-2 border-dashed border-neutral-300 flex items-center justify-center text-neutral-400 hover:border-neutral-400 hover:text-neutral-600"
-            >
-              <Upload className="w-5 h-5" />
-            </button>
+          {(form.showLocation || form.showAdditionalDetails) && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Sparkles className="w-4 h-4 text-neutral-400" /> Location & Extras
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-4">
+                {form.showLocation && (
+                  <div>
+                    <Label htmlFor="location">Location (optional)</Label>
+                    <Input
+                      id="location"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder={form.locationPlaceholder}
+                      className="mt-1.5"
+                    />
+                  </div>
+                )}
+                {form.showAdditionalDetails && (
+                  <div>
+                    <Label htmlFor="additionalDetails">{form.additionalDetailsLabel || "Additional Details (optional)"}</Label>
+                    <Textarea
+                      id="additionalDetails"
+                      value={additionalDetails}
+                      onChange={(e) => setAdditionalDetails(e.target.value)}
+                      placeholder={form.additionalDetailsPlaceholder}
+                      rows={2}
+                      className="mt-1.5"
+                    />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           )}
-        </div>
-        <input
-          ref={propertyInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          multiple
-          className="hidden"
-          onChange={(e) => {
-            if (e.target.files?.length) addPropertyImages(e.target.files);
-            e.target.value = "";
-          }}
-        />
-      </div>
 
-      <div>
-        <Label>Brand Logo (optional)</Label>
-        <div className="mt-2">
-          {logo ? (
-            <div className="w-24">
-              <ImageSlot image={logo} onRemove={() => setLogo(null)} />
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Palette className="w-4 h-4 text-neutral-400" /> Style
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Label htmlFor="tonality">Tonality (optional)</Label>
+              <Textarea
+                id="tonality"
+                value={tonality}
+                onChange={(e) => setTonality(e.target.value)}
+                placeholder={form.tonalityPlaceholder}
+                rows={2}
+                className="mt-1.5"
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Images className="w-4 h-4 text-neutral-400" /> Photos & Branding
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-5">
+              <div>
+                <div className="flex items-center justify-between">
+                  <Label>Property Photos</Label>
+                  <span className="text-xs text-neutral-400">{propertyImages.length}/{MAX_PROPERTY_IMAGES}</span>
+                </div>
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setIsDraggingPhotos(true);
+                  }}
+                  onDragLeave={() => setIsDraggingPhotos(false)}
+                  onDrop={handlePhotoDrop}
+                  className={`grid grid-cols-4 gap-3 mt-2 rounded-xl transition-colors ${
+                    isDraggingPhotos ? "bg-primary/5 ring-2 ring-primary/40" : ""
+                  }`}
+                >
+                  {propertyImages.map((img) => (
+                    <ImageSlot key={img.id} image={img} onRemove={() => setPropertyImages((prev) => prev.filter((i) => i.id !== img.id))} />
+                  ))}
+                  {propertyImages.length < MAX_PROPERTY_IMAGES && (
+                    <button
+                      type="button"
+                      onClick={() => propertyInputRef.current?.click()}
+                      className="aspect-square rounded-xl border-2 border-dashed border-neutral-300 flex flex-col items-center justify-center gap-1 text-neutral-400 hover:border-neutral-400 hover:text-neutral-600 transition-colors"
+                    >
+                      <Upload className="w-5 h-5" />
+                      <span className="text-[10px] leading-tight text-center px-1">Add or drop</span>
+                    </button>
+                  )}
+                </div>
+                <input
+                  ref={propertyInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files?.length) addPropertyImages(e.target.files);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+
+              <div>
+                <Label>Brand Logo (optional)</Label>
+                <div className="mt-2">
+                  {logo ? (
+                    <div className="w-24">
+                      <ImageSlot image={logo} onRemove={() => setLogo(null)} />
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => logoInputRef.current?.click()}
+                      className="w-24 aspect-square rounded-xl border-2 border-dashed border-neutral-300 flex items-center justify-center text-neutral-400 hover:border-neutral-400 hover:text-neutral-600 transition-colors"
+                    >
+                      <Upload className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
+                <input
+                  ref={logoInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    if (e.target.files?.length) addLogo(e.target.files);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="lg:sticky lg:top-6 flex flex-col gap-4">
+          <Card className="overflow-hidden py-0">
+            <div className="relative aspect-3/4 bg-neutral-100">
+              {template.image && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={template.image} alt={`${template.title} reference`} className="absolute inset-0 w-full h-full object-cover" />
+              )}
             </div>
-          ) : (
-            <button
-              type="button"
-              onClick={() => logoInputRef.current?.click()}
-              className="w-24 aspect-square rounded-xl border-2 border-dashed border-neutral-300 flex items-center justify-center text-neutral-400 hover:border-neutral-400 hover:text-neutral-600"
-            >
-              <Upload className="w-5 h-5" />
-            </button>
-          )}
-        </div>
-        <input
-          ref={logoInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          className="hidden"
-          onChange={(e) => {
-            if (e.target.files?.length) addLogo(e.target.files);
-            e.target.value = "";
-          }}
-        />
-      </div>
+            <CardContent className="py-4">
+              <p className="text-xs text-neutral-500">
+                Your creative follows this template&apos;s layout — the details you fill in replace the placeholder text and photos.
+              </p>
+            </CardContent>
+          </Card>
 
-      <Button size="lg" disabled={!canGenerate} onClick={handleGenerate}>
-        Generate Creative
-      </Button>
+          <Card>
+            <CardContent className="flex flex-col gap-3">
+              <ul className="flex flex-col gap-1.5">
+                <ChecklistItem done={hasPropertyName}>Property name</ChecklistItem>
+                <ChecklistItem done={hasHeadline}>Headline</ChecklistItem>
+                <ChecklistItem done={hasPhotos}>At least 1 property photo</ChecklistItem>
+              </ul>
+              <Button size="lg" className="w-full" disabled={!canGenerate} onClick={handleGenerate}>
+                {job.phase === "loading" ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                Generate Creative
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

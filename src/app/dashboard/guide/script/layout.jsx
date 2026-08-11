@@ -3,7 +3,7 @@ import { ChevronLeft } from "lucide-react";
 import PageEnd from "@/modules/common/components/page-end";
 
 export const metadata = {
-  title: "How to write good scripts — Help Center",
+  title: "How to write good scripts - Help Center",
 };
 
 export default function ScriptGuideLayout({ children }) {

@@ -13,7 +13,7 @@ import {
   Star,
 } from "lucide-react";
 
-// Collection View Modal — full-file gallery for a real estate avatar collection.
+// Collection View Modal - full-file gallery for a real estate avatar collection.
 export function CollectionViewModal({ collection, onClose, onDelete, onThumbnailSet }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [deleting, setDeleting] = useState(false);

@@ -43,7 +43,7 @@ function GenerationRow({ job }) {
 }
 
 // Lists the user's own model-tour generations (residential-classification
-// runs of this template), including ones still in progress — reading
+// runs of this template), including ones still in progress - reading
 // GET /api/model-tour/generations, which stays accurate even if the tab
 // creating a job was closed or sessionStorage was cleared.
 export function ModelTourGenerations({ open, onOpenChange }) {

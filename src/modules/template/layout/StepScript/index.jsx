@@ -6,7 +6,7 @@ import { SiteForm, isSiteFormValid } from "@/modules/template/components/SiteFor
 import { CREDIT_ACTIONS } from "@/lib/credit-costs";
 
 // Flat display estimate for the script-generation webhook call every
-// template's Script step fires — the real infra cost is a fraction of a
+// template's Script step fires - the real infra cost is a fraction of a
 // credit ($0.0004-0.0006), so this is a rounded-up preview number rather
 // than something computed per job.
 const SCRIPT_GENERATION_ESTIMATED_COST = CREDIT_ACTIONS.model_tour_script_generation.cost;
@@ -16,7 +16,7 @@ const SCRIPT_GENERATION_ESTIMATED_COST = CREDIT_ACTIONS.model_tour_script_genera
 // validation defaults to the shared required-field rules (SiteForm's
 // required fields, plus a language pick) but can be overridden via
 // `isValid` if a template ever needs stricter checks. `onNext` may be async
-// (e.g. it calls the script-generation API) — pass `loading` while it's in
+// (e.g. it calls the script-generation API) - pass `loading` while it's in
 // flight to disable the button and swap its label.
 export function StepScript({
   values,

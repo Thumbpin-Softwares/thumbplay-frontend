@@ -11,12 +11,14 @@ import {
   Columns2,
   BookOpen,
   MessageCircle,
+  Sparkles,
 } from "lucide-react";
 
 const STORAGE_KEY = "aside_collapsed";
 
 const navItems = [
   { label: "Get Started", href: "/dashboard", icon: Plus },
+  { label: "Studio", href: "/dashboard/studio", icon: Sparkles },
   { label: "Library", href: "/dashboard/assets", icon: FolderOpen },
   { label: "Edit", href: "/dashboard/edit", icon: Pencil },
   { label: "Help Center", href: "/dashboard/help", icon: BookOpen },
@@ -27,14 +29,14 @@ const whatsNewItem = { label: "What's New", href: "/dashboard/whats-new", icon: 
 
 export default function Aside() {
   const pathname = usePathname();
-  // Always start expanded to match the server-rendered markup — reading
+  // Always start expanded to match the server-rendered markup - reading
   // localStorage in the initializer would return a different value than SSR
   // on the client's first render, causing a hydration mismatch. Apply the
   // persisted preference right after mount instead.
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
-    // One-time sync from a browser-only external system (localStorage) —
+    // One-time sync from a browser-only external system (localStorage) -
     // there's no SSR-safe way to read this during render, so an effect is
     // the correct tool here, not a workaround.
     // eslint-disable-next-line react-hooks/set-state-in-effect

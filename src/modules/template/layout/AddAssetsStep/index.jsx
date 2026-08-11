@@ -8,14 +8,14 @@ import { PropertyImages } from "@/modules/template/components/PropertyImages";
 import { ModelSelector } from "@/modules/template/components/ModelSelector";
 
 // Step 0 for every template's pipeline: property photos + presenter/avatar,
-// side by side. This is the one shared "Add Assets" step — a template just
+// side by side. This is the one shared "Add Assets" step - a template just
 // supplies its own state (images, avatarHook) and copy (max photos, the
 // prebuilt-avatar label, its own upload endpoint); the layout, validation
 // wiring, and clear-confirm flow are identical everywhere, so adding
 // template #51 means composing this, not rebuilding it.
 //
 // Asset-anchored architecture: the backend never guesses the presenter's
-// gender (no vision classification, no hardcoding) — the user picks it
+// gender (no vision classification, no hardcoding) - the user picks it
 // right here, once, when they choose their avatar. `avatarGender`/
 // `setAvatarGender` are optional so templates that don't need Veo's native
 // dialogue (and therefore don't need a gender flag at all) can omit them.

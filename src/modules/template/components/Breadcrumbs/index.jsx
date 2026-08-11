@@ -5,7 +5,7 @@ import { ChevronRight, Home } from "lucide-react";
 
 // Shared breadcrumb strip for every template pipeline: Dashboard / Templates
 // / <template title>. Every template just passes its own `template` (from
-// the registry in src/lib/templates.js) — the trail updates automatically,
+// the registry in src/lib/templates.js) - the trail updates automatically,
 // so nothing here changes as templates #4 through #100 get added.
 export function Breadcrumbs({ template }) {
   const items = [

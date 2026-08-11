@@ -2,4 +2,4 @@ blank_issues_enabled: false
 contact_links:
   - name: Security vulnerability
     url: https://github.com/thumbpin/client/security/policy
-    about: Please report security vulnerabilities privately per SECURITY.md — do not open a public issue.
+    about: Please report security vulnerabilities privately per SECURITY.md - do not open a public issue.

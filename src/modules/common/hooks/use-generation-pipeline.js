@@ -19,29 +19,29 @@ const DEFAULT_STAGE_TEXT = {
  * per-part voiceover, per-part video generation, then either a final render
  * or a hand-off to the /dashboard/edit Remotion editor). Every template's own
  * GenerationProgress component only supplies what's actually different
- * between templates — its prompts/fields, part count, and finalize mode —
+ * between templates - its prompts/fields, part count, and finalize mode -
  * via `config`. The UI itself is <GenerationProgressShell {...state} />,
  * unchanged across templates.
  *
  * config:
- *   generationParams, onAbort  — passed straight through from the caller
+ *   generationParams, onAbort  - passed straight through from the caller
  *   apiBasePath, source, jobIdKey, resumeKey, editPath, compositionKey
  *   finalizeMode: "render" | "redirect"
- *     "render"   — POST {apiBasePath}/render-remotion, show a download screen
- *     "redirect" — save composition to sessionStorage[compositionKey], push editPath
+ *     "render"   - POST {apiBasePath}/render-remotion, show a download screen
+ *     "redirect" - save composition to sessionStorage[compositionKey], push editPath
  *   buildFormData(generationParams, jobId) → FormData
  *   stageForEvent(event) → one of the DEFAULT_STAGE_TEXT keys, or null/undefined to leave stage unchanged
  *   toastForEvent(event) → { type: "success"|"warning"|"error", message, options? } or null
  *   isTerminalSuccess(event) → boolean, defaults to event.type === "video_ready"
  *   isTerminalError(event) → boolean, defaults to event.type === "error"
  *   isFatalError(event) → boolean, defaults to false. When true, the whole
- *     pipeline is unrecoverable (e.g. every parallel clip failed) — instead of
+ *     pipeline is unrecoverable (e.g. every parallel clip failed) - instead of
  *     showing a dead-end error screen, this behaves like the user hit Abort:
  *     a toast fires and onAbort() is called so the caller can send them back
  *     to the script step to adjust inputs and retry.
  *   buildComposition(eventOrJob) → async, returns composition props (throw to fail)
- *   jobStatusToStage: { [job.status]: stage } — for resume polling
- *   stageTextOverrides: { [stage]: text } — merged over DEFAULT_STAGE_TEXT
+ *   jobStatusToStage: { [job.status]: stage } - for resume polling
+ *   stageTextOverrides: { [stage]: text } - merged over DEFAULT_STAGE_TEXT
  */
 export function useGenerationPipeline(config) {
   const {
@@ -68,7 +68,7 @@ export function useGenerationPipeline(config) {
   const router = useRouter();
   const searchParams = useSearchParams();
   // `?mockStage=splitting|voices|video|combining|rendering|done|error` drives
-  // this screen with fixture state instead of calling the real pipeline — for
+  // this screen with fixture state instead of calling the real pipeline - for
   // styling the shell without spending generation credits.
   const mockStage = searchParams.get("mockStage");
 
@@ -91,7 +91,7 @@ export function useGenerationPipeline(config) {
     if (mockStage) {
       if (mockStage === "error") {
         setStage("error");
-        setError("Mock error — preview only, nothing was actually generated.");
+        setError("Mock error - preview only, nothing was actually generated.");
       } else if (mockStage === "done") {
         setFinalVideoUrl("/mock/final-reel.mp4");
         setStage("done");
@@ -196,14 +196,14 @@ export function useGenerationPipeline(config) {
         }
       }
 
-      // Stream closed without ever reaching a terminal event — the
+      // Stream closed without ever reaching a terminal event - the
       // connection dropped (e.g. a serverless function timeout) mid-generation
       // rather than the pipeline finishing cleanly. Deliberately skip clearing
-      // jobIdKey — a refresh will try to resume this job, since it may still
+      // jobIdKey - a refresh will try to resume this job, since it may still
       // be running server-side.
       if (!aborted.current && !reachedTerminalEvent.current) {
         const message =
-          "Lost connection to the server mid-generation. Refresh this page — it'll try to resume the job in progress.";
+          "Lost connection to the server mid-generation. Refresh this page - it'll try to resume the job in progress.";
         console.error(`[${source}] Stream ended without a terminal event`);
         setStage("error");
         setError(message);
@@ -221,13 +221,13 @@ export function useGenerationPipeline(config) {
 
   const handleEvent = useCallback((event) => {
     if (isFatalError(event)) {
-      // Unrecoverable — every parallel clip failed. Abort rather than show a
+      // Unrecoverable - every parallel clip failed. Abort rather than show a
       // dead-end error screen, so the caller can send the user back to the
       // script step to adjust inputs and retry.
       reachedTerminalEvent.current = true;
       try { sessionStorage.removeItem(jobIdKey); } catch (_) {}
       toast.error("Video generation failed", {
-        description: event.message || "Generation failed — please check your inputs and try again.",
+        description: event.message || "Generation failed - please check your inputs and try again.",
         duration: 8000,
       });
       aborted.current = true;
@@ -257,7 +257,7 @@ export function useGenerationPipeline(config) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   /** Build the composition props from the terminal event (or a resumed job
-   * snapshot — same field shape), then either render a final mp4 or hand off
+   * snapshot - same field shape), then either render a final mp4 or hand off
    * to the shared /dashboard/edit Remotion editor, per finalizeMode. */
   const finalize = async (eventOrJob) => {
     lastFinalizeInput.current = eventOrJob;
@@ -341,7 +341,7 @@ export function useGenerationPipeline(config) {
     }
   };
 
-  /** Detach from the running job and hand control back to the caller — the
+  /** Detach from the running job and hand control back to the caller - the
    * server-side pipeline may still finish in the background, but this tab
    * stops waiting on it and the user gets their filled-in form back. */
   const abortGeneration = () => {

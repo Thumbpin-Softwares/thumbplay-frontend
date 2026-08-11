@@ -133,7 +133,7 @@ export function useCreativeAdJob(templateKey) {
       }
 
       if (!abortedRef.current && !reachedTerminal) {
-        const msg = "Lost connection to the server mid-generation. Refresh this page — it'll try to resume the job in progress.";
+        const msg = "Lost connection to the server mid-generation. Refresh this page - it'll try to resume the job in progress.";
         setPhase("error");
         setError(msg);
         toast.error("Connection lost", { description: msg });
@@ -163,7 +163,7 @@ export function useCreativeAdJob(templateKey) {
     setPhase("idle");
   };
 
-  // Called once on mount by the runner — resumes an in-flight job if the tab
+  // Called once on mount by the runner - resumes an in-flight job if the tab
   // was refreshed mid-generation.
   const resumeIfInFlight = () => {
     let existingJobId = null;

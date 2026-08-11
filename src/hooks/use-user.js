@@ -19,7 +19,7 @@ export function notifyCreditsChanged() {
  * Identity (name/email/image/createdAt) comes from the session, which is
  * itself backed by thumbpin-backend's /auth/me (see lib/backend-session.js).
  * Credits/plan/free-quota come from thumbpin-backend's dedicated credits
- * module (/api/credits/me -> backend's /credits/me) — the same live Mongo
+ * module (/api/credits/me -> backend's /credits/me) - the same live Mongo
  * row as the session, just read through the module that owns balance logic.
  */
 export function useUser() {

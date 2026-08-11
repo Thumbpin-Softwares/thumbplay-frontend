@@ -3,13 +3,13 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
-// Background n8n video-generation job — split out of what used to be the
+// Background n8n video-generation job - split out of what used to be the
 // full-screen ModelTourGeneration component so the runner can keep polling
 // while the user is already on the Captions & Logo step picking styles.
 // Same resume-on-refresh contract as before: a jobId in sessionStorage +
 // GET /jobs/:jobId to reattach if the tab reloads mid-generation.
 //
-// `storageKey` defaults to the original model-tour (real estate) key —
+// `storageKey` defaults to the original model-tour (real estate) key -
 // other templates sharing this hook (e.g. luxury-car-exit) must pass their
 // own distinct key so an in-flight job in one template's tab doesn't get
 // picked up as a resume target by another template's tab.
@@ -39,7 +39,7 @@ export function useModelTourVideoJob(storageKey = "model-tour-job-id") {
         if (!res.ok) throw new Error(`Resume failed: ${res.status}`);
 
         // A crashed/unreachable backend can surface here as an HTML error
-        // page rather than JSON — parse defensively instead of letting a
+        // page rather than JSON - parse defensively instead of letting a
         // raw SyntaxError ("Unexpected token '<'...") reach the UI.
         const { job } = await res.json().catch(() => ({ job: null }));
         if (!job) throw new Error("Resume failed: invalid job response");
@@ -135,7 +135,7 @@ export function useModelTourVideoJob(storageKey = "model-tour-job-id") {
       }
 
       if (!abortedRef.current && !reachedTerminal) {
-        const message = "Lost connection to the server mid-generation. Refresh this page — it'll try to resume the job in progress.";
+        const message = "Lost connection to the server mid-generation. Refresh this page - it'll try to resume the job in progress.";
         setPhase("error");
         setError(message);
         toast.error("Connection lost", { description: message });
@@ -165,10 +165,10 @@ export function useModelTourVideoJob(storageKey = "model-tour-job-id") {
     setPhase("idle");
   };
 
-  // Called once on mount by the runner — resumes an in-flight job if the tab
+  // Called once on mount by the runner - resumes an in-flight job if the tab
   // was refreshed mid-generation, otherwise leaves phase at "idle". `script`
   // is only needed so a post-resume Retry (after an error) has something to
-  // resend — the runner restores it from its own sessionStorage snapshot.
+  // resend - the runner restores it from its own sessionStorage snapshot.
   const resumeIfInFlight = (script) => {
     let existingJobId = null;
     try {

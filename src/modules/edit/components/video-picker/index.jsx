@@ -54,7 +54,7 @@ function useVideos() {
 export function VideoPicker({ onSelect, hideHeader = false, excludeIds = [] }) {
   const { videos: allVideos, pagination, fetching, load } = useVideos();
   const [previewVideo, setPreviewVideo] = useState(null);
-  // Multi-clip sources (asset.url is only the FIRST clip — the merged reel
+  // Multi-clip sources (asset.url is only the FIRST clip - the merged reel
   // isn't rendered until the editor's Export) get reconstructed and played as
   // a real Remotion composition here, instead of just the raw asset.url.
   const [previewComposition, setPreviewComposition] = useState(null);
@@ -92,7 +92,7 @@ export function VideoPicker({ onSelect, hideHeader = false, excludeIds = [] }) {
     setPreviewVideo(video);
     setPreviewComposition(null);
     const sourceConfig = EDITABLE_SOURCES[video.metadata?.source];
-    if (!sourceConfig) return; // single-clip asset — asset.url already is the whole video
+    if (!sourceConfig) return; // single-clip asset - asset.url already is the whole video
 
     setPreviewLoading(true);
     try {
@@ -397,7 +397,7 @@ export function VideoPicker({ onSelect, hideHeader = false, excludeIds = [] }) {
                       <Loader2 className="w-6 h-6 text-white animate-spin" />
                     </div>
                   ) : previewComposition ? (
-                    // Full multi-clip reel, reconstructed from metadata — asset.url
+                    // Full multi-clip reel, reconstructed from metadata - asset.url
                     // alone is only the first clip, so a plain <video> here would
                     // silently cut the preview off after part 1.
                     <div className="w-full max-h-[75vh] mx-auto rounded-md overflow-hidden bg-black" style={{ aspectRatio: "9/16" }}>
@@ -420,7 +420,7 @@ export function VideoPicker({ onSelect, hideHeader = false, excludeIds = [] }) {
                   )}
                   <button
                     onClick={() => handleDownload(previewVideo.url, previewVideo.name)}
-                    title={previewComposition ? "Download part 1 only — export the full reel from the editor" : "Download"}
+                    title={previewComposition ? "Download part 1 only - export the full reel from the editor" : "Download"}
                     className="absolute top-2 right-2 h-8 w-8 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow-md hover:bg-white transition-colors"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>

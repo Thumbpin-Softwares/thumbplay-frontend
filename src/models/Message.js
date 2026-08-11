@@ -17,7 +17,7 @@ const MessageSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    // Only the recipient side's flag matters — a user message is unread by
+    // Only the recipient side's flag matters - a user message is unread by
     // the admin inbox until an admin opens it, and vice versa.
     readByAdmin: {
       type: Boolean,

@@ -1,13 +1,13 @@
-// Central registry for the Creative Ad Generator's templates — mirrors
+// Central registry for the Creative Ad Generator's templates - mirrors
 // src/lib/templates.js but for static assets instead of video reels.
 //
 // Every entry here maps 1:1 to the backend's CREATIVE_TEMPLATE_WEBHOOKS
 // registry (backend/src/modules/creative-ads/creative-ads.service.ts) and to
 // an n8n workflow whose "Build Creative Prompt" node hardcodes this same
-// `image` URL as its generation reference — the gallery thumbnail IS the
+// `image` URL as its generation reference - the gallery thumbnail IS the
 // design the model replicates. Adding a template is: one new n8n workflow
 // (duplicate an existing creative-ads-* workflow), one new backend registry
-// entry, and one new entry below — the generic form/route render everything
+// entry, and one new entry below - the generic form/route render everything
 // else from `form`.
 export const CREATIVE_TEMPLATES = [
   {

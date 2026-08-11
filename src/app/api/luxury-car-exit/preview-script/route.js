@@ -4,7 +4,7 @@ const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
 const AUTH_COOKIE_NAME = "auth_token";
 
 // Thin proxy to thumbpin-backend's POST /seedance-reel/preview-script.
-// Response body is raw audio bytes (audio/mpeg or audio/wav), not JSON —
+// Response body is raw audio bytes (audio/mpeg or audio/wav), not JSON -
 // passed through as-is rather than parsed.
 export async function POST(request) {
   const cookieStore = await cookies();

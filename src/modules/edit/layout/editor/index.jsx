@@ -34,7 +34,7 @@ import { loadDraft, saveDraft, clearDraft, draftKeyFor } from "@/modules/edit/ut
 
 const FPS = 30;
 
-// Identifies which composition a saved draft belongs to — if the user opens
+// Identifies which composition a saved draft belongs to - if the user opens
 // a different video, a stale draft from a previous one won't get applied.
 function draftSignature(compositionProps) {
   return [
@@ -60,7 +60,7 @@ function createOverlay(type) {
   return { id, type: "image", x: 50, y: 50, width: 40, url: "", aspect: null, hidden: false };
 }
 
-// Shared by the live Player preview and the render/caption POST bodies — the
+// Shared by the live Player preview and the render/caption POST bodies - the
 // two composition shapes need different extra fields (action-reel has no
 // broll/intro/outro layer at all), so this is the one place that decides
 // which fields belong on top of the raw compositionProps + overlays/music/cuts.
@@ -144,7 +144,7 @@ const PlayerContainer = memo(
 export function Editor({ compositionProps, onExit }) {
   const signature = draftSignature(compositionProps);
   const draftKey = draftKeyFor(compositionProps);
-  // Read once per mount — a draft only ever applies to the composition it
+  // Read once per mount - a draft only ever applies to the composition it
   // was saved for, so a different video never inherits stale edits.
   const [initialDraft] = useState(() => {
     const stored = loadDraft(draftKey);
@@ -194,7 +194,7 @@ export function Editor({ compositionProps, onExit }) {
     showOutro:      false,
   });
 
-  // Length of the raw, uncut reel — cutRanges (from the ruler's Cut tool)
+  // Length of the raw, uncut reel - cutRanges (from the ruler's Cut tool)
   // are stored in this original timeline's frame coordinates.
   const originalDurationInFrames = isActionReelType
     ? calcActionReelBaseDurationInFrames({
@@ -209,7 +209,7 @@ export function Editor({ compositionProps, onExit }) {
         showOutro:      false,
       });
 
-  // What the Player/Timeline actually work with — the reel's length after
+  // What the Player/Timeline actually work with - the reel's length after
   // cuts ripple everything shorter. Must match the cuts-aware calculator
   // used server-side (calcSeedanceReelDurationInFrames / calcActionReelDurationInFrames),
   // so preview and export always agree.
@@ -231,12 +231,12 @@ export function Editor({ compositionProps, onExit }) {
   const { keepRanges } = applyCutRanges(originalDurationInFrames, cutRanges);
 
   // The reel's actual final length after both cuts (baked into durationInFrames
-  // above) and the in/out trim handles — this is what gets rendered/exported
+  // above) and the in/out trim handles - this is what gets rendered/exported
   // and what caption billing is based on.
   const trimOutFrame = trim.out > 0 ? trim.out : durationInFrames;
   const trimmedDurationInFrames = trimOutFrame - trim.in;
 
-  // Autosave the edit — so leaving the editor (or refreshing) never loses
+  // Autosave the edit - so leaving the editor (or refreshing) never loses
   // overlays/music/cuts/trim/caption progress for this composition, and it
   // shows up as a resumable card on the /dashboard/edit drafts dashboard.
   useEffect(() => {
@@ -377,7 +377,7 @@ export function Editor({ compositionProps, onExit }) {
   const handleGenerateCaptions = async (preset, language, translationLanguage, position) => {
     setCaptionState({ preset, status: "rendering", progress: 0, message: "Assembling video…", videoUrl: null, error: null });
     try {
-      // Respect the same in/out trim as the regular render — otherwise the
+      // Respect the same in/out trim as the regular render - otherwise the
       // captioned video (and its billed duration) would include footage the
       // user already trimmed away.
       const captionedDurationSeconds = trimmedDurationInFrames / FPS;
@@ -451,7 +451,7 @@ export function Editor({ compositionProps, onExit }) {
     } catch (err) {
       console.error("[Editor] Caption generation failed:", err);
       // VEED's raw "Transcript language ... not supported for subtitle rendering"
-      // message (and any other backend error) is meaningless to end users —
+      // message (and any other backend error) is meaningless to end users -
       // surface a generic description for that specific case and always keep
       // the inline hint actionable rather than echoing the raw error.
       const description = /not supported for subtitle rendering/i.test(err.message || "")
@@ -459,7 +459,7 @@ export function Editor({ compositionProps, onExit }) {
         : err.message || "Try different settings.";
 
       // Only the captions/generate step (post-VEED) actually keeps a charge
-      // on failure — the render step before it never touches credits.
+      // on failure - the render step before it never touches credits.
       const creditsCharged = err.creditsCharged;
       editNotify.error("Captions failed", {
         description:
@@ -521,7 +521,7 @@ export function Editor({ compositionProps, onExit }) {
   };
 
   // newOrder is the full overlays array in its new stacking order (index 0 =
-  // back of the stack, last = front) — the panel computes this from drag.
+  // back of the stack, last = front) - the panel computes this from drag.
   const handleReorderOverlays = (newOrder) => {
     setOverlays(newOrder);
   };
@@ -550,7 +550,7 @@ export function Editor({ compositionProps, onExit }) {
 
   const handleClearMusic = () => setMusic(null);
 
-  // start/end here are VIRTUAL (already-cut) frame positions from the ruler —
+  // start/end here are VIRTUAL (already-cut) frame positions from the ruler -
   // map them back to the original timeline before storing, so the excluded
   // range survives future cuts/ripples correctly.
   const handleDeleteSegment = (virtualStart, virtualEnd) => {
@@ -586,7 +586,7 @@ export function Editor({ compositionProps, onExit }) {
     setCaptionDraft(null);
     setActivePanel(null);
     setShowDiscardConfirm(false);
-    toast.success("Draft discarded — back to the original reel.");
+    toast.success("Draft discarded - back to the original reel.");
   };
 
   return (

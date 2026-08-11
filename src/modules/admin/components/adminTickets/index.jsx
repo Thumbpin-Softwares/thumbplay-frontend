@@ -119,7 +119,7 @@ export function AdminTickets() {
                     <p className="text-xs text-gray-500 line-clamp-1 max-w-md">{t.description}</p>
                   </td>
                   <td className="px-4 py-3">
-                    <p className="text-gray-900">{t.user?.name || "—"}</p>
+                    <p className="text-gray-900">{t.user?.name || "-"}</p>
                     <p className="text-xs text-gray-500">{t.user?.email}</p>
                   </td>
                   <td className="px-4 py-3">

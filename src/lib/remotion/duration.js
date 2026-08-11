@@ -2,7 +2,7 @@ export const MAX_REEL_SECONDS = 60;
 
 /**
  * Scales down brollClips' segmentDuration (proportionally, if needed) so the
- * total reel — avatar + broll + CTA + optional intro/outro — never exceeds
+ * total reel - avatar + broll + CTA + optional intro/outro - never exceeds
  * MAX_REEL_SECONDS. The broll segment is the only "elastic" part (its length
  * tracks the Part 2 voiceover, which can run long for a wordy script), so it's
  * the one that gets compressed; playbackRate in SeedanceReelComposition
@@ -32,8 +32,8 @@ export function clampBrollClips({
  * Compute total Remotion composition duration in frames.
  *
  * Pass either:
- *   brollClips — array of { segmentDuration } objects (preferred)
- *   walkthroughAudioDuration — legacy single-clip fallback
+ *   brollClips - array of { segmentDuration } objects (preferred)
+ *   walkthroughAudioDuration - legacy single-clip fallback
  */
 export function calcDurationInFrames({
   avatarDuration           = 15,
@@ -62,7 +62,7 @@ export function calcDurationInFrames({
  *
  * Used by the editor's Cut tool: deleting a clip on the ruler removes that
  * span from the composition (both preview and export), rippling everything
- * after it earlier — rather than just muting/hiding it in place.
+ * after it earlier - rather than just muting/hiding it in place.
  */
 export function applyCutRanges(totalDurationInFrames, excludedRanges = []) {
   const merged = excludedRanges
@@ -103,7 +103,7 @@ export function applyCutRanges(totalDurationInFrames, excludedRanges = []) {
  * Maps a frame range in the *virtual* (post-cut) timeline back to one or
  * more ranges in the *original* timeline, using the keepRanges produced by
  * applyCutRanges. Needed when the user deletes a clip they selected on the
- * (already-cut) ruler — we need to know what original footage that
+ * (already-cut) ruler - we need to know what original footage that
  * corresponds to so it can be added to the excluded-ranges list.
  */
 export function mapVirtualRangeToOriginal(virtualStart, virtualEnd, keepRanges) {
@@ -122,9 +122,9 @@ export function mapVirtualRangeToOriginal(virtualStart, virtualEnd, keepRanges) 
 }
 
 /**
- * Base duration calculator for the "Action Reel" composition — two
+ * Base duration calculator for the "Action Reel" composition - two
  * independent, already-baked-audio Seedance clips back to back, no
- * broll/intro/outro layers. Raw (no cuts) — the cuts-aware wrapper used
+ * broll/intro/outro layers. Raw (no cuts) - the cuts-aware wrapper used
  * everywhere the actual Player/export duration matters is
  * calcActionReelDurationInFrames, exported from ActionReelComposition.jsx.
  */

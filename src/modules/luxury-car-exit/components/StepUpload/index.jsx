@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/dialog";
 
 /**
- * StepUpload — Step 0 for the Luxury Car Exit pipeline.
+ * StepUpload - Step 0 for the Luxury Car Exit pipeline.
  *
  * Simplified from veo-long-ad/StepUpload:
  * - Keeps: location images (max 4) + avatar selector (prebuilt / upload / my-assets)
@@ -484,7 +484,7 @@ export function StepUpload({
                         fd.append(
                           "name",
                           collectionName.trim() ||
-                            `My Presenter — ${new Date().toLocaleDateString()}`,
+                            `My Presenter - ${new Date().toLocaleDateString()}`,
                         );
                         const res = await fetch(
                           "/api/veo-long-ad/presenter/upload",
@@ -656,7 +656,7 @@ export function StepUpload({
         </Button>
       </div>
 
-      {/* Collection photo preview — carousel */}
+      {/* Collection photo preview - carousel */}
       <Dialog
         open={!!previewCollection}
         onOpenChange={(open) => !open && setPreviewCollection(null)}
@@ -762,7 +762,7 @@ export function StepUpload({
             </div>
           )}
 
-          {/* Mobile close button overlay (optional — Dialog has its own, but this helps on full-bleed) */}
+          {/* Mobile close button overlay (optional - Dialog has its own, but this helps on full-bleed) */}
           <button
             onClick={() => setPreviewCollection(null)}
             className="absolute top-2 right-2 sm:hidden w-10 h-10 rounded-full bg-black/40 flex items-center justify-center text-white/90 active:scale-90 transition-transform z-20"

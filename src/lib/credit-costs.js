@@ -1,4 +1,4 @@
-// Plain-data credit cost catalog — no server-only imports (DB/mongoose), so
+// Plain-data credit cost catalog - no server-only imports (DB/mongoose), so
 // this is safe to import from both API routes (via credit-system.js) and
 // client components that need to predict affordability before submitting.
 
@@ -27,7 +27,7 @@ export const CREDIT_ACTIONS = {
   avatar_group_training: { cost: 25, freeBucket: null, label: "Custom Avatar Training" },
   digital_twin_training: { cost: 25, freeBucket: null, label: "Digital Twin Training" },
 
-  // cost is a placeholder — captions are priced dynamically per job via
+  // cost is a placeholder - captions are priced dynamically per job via
   // computeCaptionCreditCost() and passed in as a costOverride.
   captions_generation: { cost: 0, freeBucket: null, label: "Caption Generation" },
 
@@ -38,7 +38,7 @@ export const CREDIT_ACTIONS = {
   model_tour_script_generation: { cost: 4, freeBucket: null, label: "Model Tour Script Generation" },
 };
 
-// VEED subtitles ("captions_generation") pricing — usage-based instead of a
+// VEED subtitles ("captions_generation") pricing - usage-based instead of a
 // flat catalog cost. Real infra cost formula from the VEED/fal pricing:
 //   $0.10 / minute of input video
 //   × 2 if the render resolution is above 1080p
@@ -58,7 +58,7 @@ export const CAPTION_PRICING = {
 };
 
 // fal.ai/VEED bills us ~$0.10 for a subtitle run the moment it's submitted,
-// regardless of whether it succeeds — so a failed run still costs us real
+// regardless of whether it succeeds - so a failed run still costs us real
 // money. Refunding the full charge on failure would mean eating that cost
 // every time, so we keep a flat raw-cost charge (no margin) instead.
 export const CAPTION_FAILED_RUN_CHARGE_CREDITS = Math.round(
@@ -100,7 +100,7 @@ export function computeCaptionCreditCost({
 /**
  * Client-side prediction of whether a user profile (from /api/user/profile,
  * shape: { plan, credits, freeVideoGenerationsUsed, freeAvatarGenerationsUsed })
- * can afford `action` — mirrors hasSufficientCreditsForAction's decision logic
+ * can afford `action` - mirrors hasSufficientCreditsForAction's decision logic
  * (free-bucket first, then paid credits) without hitting the DB. This is only
  * a UX predictor for disabling buttons early; the server-side check is what
  * actually enforces it.

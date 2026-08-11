@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Plus, FolderOpen, Pencil, Megaphone } from "lucide-react";
+import { Plus, FolderOpen, Pencil, Megaphone, Sparkles } from "lucide-react";
 
 const navItems = [
   { label: "Get Started", href: "/dashboard", icon: Plus },
+  { label: "Studio", href: "/dashboard/studio", icon: Sparkles },
   { label: "Library", href: "/dashboard/assets", icon: FolderOpen },
   { label: "Edit", href: "/dashboard/edit", icon: Pencil },
   { label: "What's New", href: "/dashboard/whats-new", icon: Megaphone },
