@@ -10,7 +10,12 @@ export const CREATIVE_TEMPLATES = [
     category: "real-estate",
     image: "https://content.thumbpin.in/creatives/art_of_living.jpg",
     tag: "New",
-    href: null,
+    // templateKey maps 1:1 to the backend's CREATIVE_TEMPLATE_WEBHOOKS
+    // registry (backend/src/modules/creative-ads/creative-ads.service.ts) —
+    // every future template needs one new n8n workflow + one new entry
+    // there, plus a templateKey + href here, nothing else.
+    templateKey: "art-of-living",
+    href: "/dashboard/creative/art-of-living",
   },
 ];
 
