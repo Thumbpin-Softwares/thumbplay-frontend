@@ -192,14 +192,18 @@ export function useModelTourVideoJob(storageKey = "model-tour-job-id") {
   // Regenerates one chunk (1-based index). Optimistically flips that tile to
   // "regenerating" locally, then polls the job doc until it leaves that
   // state - other tiles are untouched throughout.
-  const regenerateChunk = async (index) => {
+  const regenerateChunk = async (index, note) => {
     const jobId = jobIdRef.current;
     if (!jobId) return;
 
     setChunks((prev) => prev.map((c) => (c.index === index ? { ...c, status: "regenerating" } : c)));
 
     try {
-      const res = await fetch(`/api/model-tour/jobs/${jobId}/chunks/${index}/regenerate`, { method: "POST" });
+      const res = await fetch(`/api/model-tour/jobs/${jobId}/chunks/${index}/regenerate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ note }),
+      });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `Server error: ${res.status}`);
     } catch (err) {
