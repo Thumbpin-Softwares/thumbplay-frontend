@@ -12,6 +12,7 @@ import { StepFinalize } from "@/modules/template/layout/StepFinalize";
 import { StepGeneration } from "@/modules/template/layout/StepGeneration";
 import { useModelTourVideoJob } from "@/modules/template-property-commercial/hooks/useModelTourVideoJob";
 import { ModelTourPostProcess } from "@/modules/template-property-commercial/components/ModelTourPostProcess";
+import { ChunkReviewGrid } from "@/modules/template-property-commercial/components/ChunkReviewGrid";
 import { ModelTourGenerations } from "@/modules/template-property-commercial/components/ModelTourGenerations";
 import { ModelTourFinalize } from "@/modules/template-property-commercial/components/ModelTourFinalize";
 import { History } from "lucide-react";
@@ -330,7 +331,16 @@ export default function LuxuryCarExitTourRunner({ template }) {
             />
           )}
 
-          {step === 3 && isModelTourFlow && (
+          {step === 3 && isModelTourFlow && videoJob.phase === "chunks_ready" && (
+            <ChunkReviewGrid
+              chunks={videoJob.chunks}
+              onRegenerate={videoJob.regenerateChunk}
+              onCombine={videoJob.combine}
+              onBack={() => setStep(2)}
+            />
+          )}
+
+          {step === 3 && isModelTourFlow && videoJob.phase !== "chunks_ready" && (
             <ModelTourPostProcess
               jobPhase={videoJob.phase}
               jobError={videoJob.error}

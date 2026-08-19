@@ -12,6 +12,7 @@ import { StepFinalize } from "@/modules/template/layout/StepFinalize";
 import { StepGeneration } from "@/modules/template/layout/StepGeneration";
 import { useModelTourVideoJob } from "./hooks/useModelTourVideoJob";
 import { ModelTourPostProcess } from "./components/ModelTourPostProcess";
+import { ChunkReviewGrid } from "./components/ChunkReviewGrid";
 import { ModelTourGenerations } from "./components/ModelTourGenerations";
 import { ModelTourFinalize } from "./components/ModelTourFinalize";
 import { History } from "lucide-react";
@@ -385,7 +386,16 @@ export default function PropertyCommercialRunner({ template }) {
             />
           )}
 
-          {step === 3 && isModelTourFlow && (
+          {step === 3 && isModelTourFlow && videoJob.phase === "chunks_ready" && (
+            <ChunkReviewGrid
+              chunks={videoJob.chunks}
+              onRegenerate={videoJob.regenerateChunk}
+              onCombine={videoJob.combine}
+              onBack={() => setStep(2)}
+            />
+          )}
+
+          {step === 3 && isModelTourFlow && videoJob.phase !== "chunks_ready" && (
             <ModelTourPostProcess
               jobPhase={videoJob.phase}
               jobError={videoJob.error}
