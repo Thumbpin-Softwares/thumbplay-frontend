@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { Download, Loader2, RotateCcw, Sparkles, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 function ChunkTile({ chunk, onRegenerate }) {
   const isRegenerating = chunk.status === "regenerating";
@@ -11,6 +13,13 @@ function ChunkTile({ chunk, onRegenerate }) {
   // its last-good url and just gets a corner badge) - each needs its own
   // placeholder rather than both silently falling through to a blank box.
   const neverSucceeded = isError && !chunk.url;
+
+  // Freeform note for this attempt only - not persisted anywhere once sent,
+  // so it doesn't pile up across retries the way editing the stored script
+  // would. Kept even after a regenerate completes rather than cleared, since
+  // if the result still isn't right the user's likely to just tweak the same
+  // note and try again rather than retype it from scratch.
+  const [note, setNote] = useState("");
 
   return (
     <div className="rounded-xl border border-neutral-200 overflow-hidden bg-white">
@@ -39,19 +48,34 @@ function ChunkTile({ chunk, onRegenerate }) {
           Scene {chunk.index}
         </span>
       </div>
-      <div className="p-2 flex items-center gap-1.5">
-        <Button size="sm" variant="outline" className="flex-1" disabled={isRegenerating} onClick={() => onRegenerate(chunk.index)}>
-          <RotateCcw className="w-3.5 h-3.5" /> {neverSucceeded ? "Retry" : "Regenerate"}
-        </Button>
-        <Button size="sm" variant="ghost" disabled={isRegenerating || !chunk.url} asChild={!isRegenerating && !!chunk.url}>
-          {!isRegenerating && chunk.url ? (
-            <a href={chunk.url} download target="_blank" rel="noreferrer">
+      <div className="p-2 space-y-1.5">
+        <Input
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          disabled={isRegenerating}
+          placeholder="What should be different? (optional)"
+          className="h-7 text-[11px] px-2"
+        />
+        <div className="flex items-center gap-1.5">
+          <Button
+            size="sm"
+            variant="outline"
+            className="flex-1"
+            disabled={isRegenerating}
+            onClick={() => onRegenerate(chunk.index, note)}
+          >
+            <RotateCcw className="w-3.5 h-3.5" /> {neverSucceeded ? "Retry" : "Regenerate"}
+          </Button>
+          <Button size="sm" variant="ghost" disabled={isRegenerating || !chunk.url} asChild={!isRegenerating && !!chunk.url}>
+            {!isRegenerating && chunk.url ? (
+              <a href={chunk.url} download target="_blank" rel="noreferrer">
+                <Download className="w-3.5 h-3.5" />
+              </a>
+            ) : (
               <Download className="w-3.5 h-3.5" />
-            </a>
-          ) : (
-            <Download className="w-3.5 h-3.5" />
-          )}
-        </Button>
+            )}
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -72,7 +96,7 @@ export function ChunkReviewGrid({ chunks, onRegenerate, onCombine, onBack }) {
       <div>
         <h2 className="text-sm font-medium">Review your 6 scenes</h2>
         <p className="text-xs text-muted-foreground mt-0.5">
-          Not happy with a scene? Regenerate just that one. Download any clip individually, or combine them into the final video when you&apos;re ready.
+          Not happy with a scene? Tell it what to change and regenerate just that one. Download any clip individually, or combine them into the final video when you&apos;re ready.
         </p>
         {failedCount > 0 && (
           <p className="text-xs text-destructive mt-1">
