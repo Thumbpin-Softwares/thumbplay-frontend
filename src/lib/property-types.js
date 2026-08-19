@@ -1,8 +1,8 @@
 // Shared property-type taxonomy for the AI "Write Script" forms across all
 // reel pipelines (comedy-reel, luxury-car-exit, action-reel). Replaces the old
 // free-text "Type" input with a structured selector so the generated script
-// can adapt its angle — ownership vs rental vs stay, residential vs commercial
-// vs land — to the kind of property being marketed.
+// can adapt its angle - ownership vs rental vs stay, residential vs commercial
+// vs land - to the kind of property being marketed.
 //
 // Single source of truth: the three StepScript forms render PROPERTY_TYPE_GROUPS
 // and read field hints via getPropertyType(); the generate-script API receives
@@ -48,7 +48,7 @@ export const PROPERTY_TYPE_GROUPS = [
   },
 ];
 
-// Price field wording per transaction — the value still lives in qaAnswers.price;
+// Price field wording per transaction - the value still lives in qaAnswers.price;
 // only the label/placeholder shown to the user changes.
 const TRANSACTION_DEFAULTS = {
   sale: { priceLabel: "Price", pricePlaceholder: "e.g. ₹7 Cr onwards" },

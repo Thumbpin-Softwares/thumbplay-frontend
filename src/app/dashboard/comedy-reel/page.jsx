@@ -54,7 +54,7 @@ function ComedyReelContent() {
 
   const avatarHook = useAvatars();
 
-  // Restore step 2 (Generate) on refresh — location image Files can't survive
+  // Restore step 2 (Generate) on refresh - location image Files can't survive
   // a reload, but GenerationProgress doesn't need them once a job has already
   // started; it resumes the existing job instead of re-submitting.
   useEffect(() => {

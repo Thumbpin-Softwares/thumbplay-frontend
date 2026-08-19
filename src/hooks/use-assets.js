@@ -93,7 +93,7 @@ export function useAssets(typeFilter = null) {
 
   /**
    * Uploads straight from the browser to R2 via a presigned URL instead of
-   * routing the file through this app's serverless function — Vercel caps
+   * routing the file through this app's serverless function - Vercel caps
    * function request bodies at 4.5MB, which a real photo/avatar upload can
    * easily exceed and previously surfaced as a raw "Content Too Large" 413.
    */

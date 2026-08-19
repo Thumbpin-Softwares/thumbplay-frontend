@@ -1,6 +1,6 @@
 // Font choices for text overlays. Kept to common web-safe stacks (same
 // convention as IntroAnimation/OutroAnimation) rather than pulling in
-// @remotion/google-fonts — no async font loading, and no risk of the
+// @remotion/google-fonts - no async font loading, and no risk of the
 // preview (browser fonts) drifting from the server render (headless
 // Chromium fonts) for a name that isn't actually installed there.
 export const OVERLAY_FONTS = [

@@ -1,6 +1,6 @@
 // Audio (both the Part 2 voiceover and background music) uses the classic,
 // stable `remotion` Audio (ffmpeg-based extraction) rather than
-// @remotion/media's — that package is explicitly "Experimental
+// @remotion/media's - that package is explicitly "Experimental
 // WebCodecs-based media tags" and would silently drop a track on
 // codec/format edge cases instead of erroring, which is why background
 // music in particular looked like it "sometimes" didn't apply.
@@ -81,16 +81,16 @@ function FadeContent({ children, totalFrames, fade, fadeIn = true, fadeOut = tru
 
 /**
  * Props:
- *   avatarVideoUrl  — intro avatar MP4 (Seedance-baked audio)
- *   brollClips      — Array<{ url, videoDuration, segmentDuration }>
+ *   avatarVideoUrl  - intro avatar MP4 (Seedance-baked audio)
+ *   brollClips      - Array<{ url, videoDuration, segmentDuration }>
  *                     Each clip plays for segmentDuration seconds.
  *                     playbackRate = min(1, videoDuration / segmentDuration)
  *                     so clips shorter than the voiceover window are slowed down.
- *   ctaVideoUrl     — CTA avatar MP4 (Seedance-baked audio)
- *   part2AudioUrl   — ElevenLabs Part 2 TTS; plays over the entire B-roll section
- *   avatarDuration  — avatar video length in seconds (default 15)
- *   ctaDuration     — CTA video length in seconds (default 10)
- *   ctaText         — text shown in outro card
+ *   ctaVideoUrl     - CTA avatar MP4 (Seedance-baked audio)
+ *   part2AudioUrl   - ElevenLabs Part 2 TTS; plays over the entire B-roll section
+ *   avatarDuration  - avatar video length in seconds (default 15)
+ *   ctaDuration     - CTA video length in seconds (default 10)
+ *   ctaText         - text shown in outro card
  */
 function ReelContent({
   avatarVideoUrl = "",
@@ -100,7 +100,7 @@ function ReelContent({
   avatarDuration = 15,
   ctaDuration    = 10,
   ctaText        = "",
-  // Intro/outro title cards are NOT baked into the generated reel by default —
+  // Intro/outro title cards are NOT baked into the generated reel by default -
   // they're optional, user-editable additions made on the edit page.
   showIntro      = false,
   showOutro      = false,
@@ -126,7 +126,7 @@ function ReelContent({
   // rawRate = videoDuration / segmentDuration:
   //   < 1 → slow down (clip is shorter than its voiceover window)
   //   > 1 → speed up (clip is longer than its voiceover window)
-  // Clamped to [0.5, 4] — the range @remotion/media guarantees.
+  // Clamped to [0.5, 4] - the range @remotion/media guarantees.
   // loop handles the gap when rawRate < 0.5 (very long voiceover / very short clip).
   const clips = brollClips.map((clip) => {
     const segFrames = Math.round((clip.segmentDuration || 10) * fps);
@@ -160,14 +160,14 @@ function ReelContent({
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#000000" }}>
-      {/* 1 — Intro animation (luxury white screen) — optional, off by default */}
+      {/* 1 - Intro animation (luxury white screen) - optional, off by default */}
       {showIntro && (
         <Sequence from={introAt} durationInFrames={introFrames}>
           <IntroAnimation title={introTitle} subtitle={introSubtitle} tagline={introTagline} />
         </Sequence>
       )}
 
-      {/* 2 — Avatar intro (Seedance-baked audio preserved) */}
+      {/* 2 - Avatar intro (Seedance-baked audio preserved) */}
       {avatarVideoUrl && (
         <Sequence from={avatarAt} durationInFrames={avatarFrames}>
           <FadeContent totalFrames={avatarFrames} fade={FADE} fadeIn fadeOut={false}>
@@ -181,7 +181,7 @@ function ReelContent({
         </Sequence>
       )}
 
-      {/* 3 — B-roll section: clips in sequence, Part 2 audio over all of them */}
+      {/* 3 - B-roll section: clips in sequence, Part 2 audio over all of them */}
       {clips.length > 0 && (
         <Sequence from={brollAt} durationInFrames={totalBrollFrames}>
           {part2AudioUrl && <Audio src={part2AudioUrl} />}
@@ -207,7 +207,7 @@ function ReelContent({
         </Sequence>
       )}
 
-      {/* 4 — CTA avatar (Seedance-baked audio preserved) */}
+      {/* 4 - CTA avatar (Seedance-baked audio preserved) */}
       {ctaVideoUrl && (
         <Sequence from={ctaAt} durationInFrames={ctaFrames}>
           <FadeContent totalFrames={ctaFrames} fade={FADE} fadeIn={false} fadeOut>
@@ -221,14 +221,14 @@ function ReelContent({
         </Sequence>
       )}
 
-      {/* 5 — Outro animation (luxury white screen + CTA text) — optional, off by default */}
+      {/* 5 - Outro animation (luxury white screen + CTA text) - optional, off by default */}
       {showOutro && (
         <Sequence from={outroAt} durationInFrames={outroFrames}>
           <OutroAnimation ctaText={ctaText} brandText={outroBrandText} />
         </Sequence>
       )}
 
-      {/* 6 — User text/image overlays — on top of everything, full duration.
+      {/* 6 - User text/image overlays - on top of everything, full duration.
           Array order is the stacking order: later entries render on top. */}
       {overlays.length > 0 && (
         <AbsoluteFill>
@@ -238,7 +238,7 @@ function ReelContent({
         </AbsoluteFill>
       )}
 
-      {/* 7 — Background music, trimmed to whichever section the user picked
+      {/* 7 - Background music, trimmed to whichever section the user picked
           in the editor. Playback is naturally cut off at the composition's
           own duration, so no explicit trimAfter is needed. */}
       {musicUrl && (
@@ -266,7 +266,7 @@ function originalDurationFor(props) {
  * Wraps ReelContent with support for the editor's Cut tool: `cutRanges` is a
  * list of { start, end } frame ranges (in the *original*, uncut timeline)
  * that the user deleted. Each surviving chunk is re-mounted as its own pair
- * of nested Sequences — the outer one places it at its new, rippled
+ * of nested Sequences - the outer one places it at its new, rippled
  * position; the inner one re-bases time back to the original frame it
  * should render, via a negative `from` (Remotion shifts child frames by
  * `parentFrame - from`, so a negative `from` shifts them forward).
@@ -295,7 +295,7 @@ export function SeedanceReelComposition({ cutRanges = [], ...rest }) {
   );
 }
 
-/** Total composition length after cuts — use this (not the raw calcDurationInFrames)
+/** Total composition length after cuts - use this (not the raw calcDurationInFrames)
  * anywhere the actual Player/export duration is needed once cuts are in play. */
 export function calcSeedanceReelDurationInFrames({ cutRanges = [], ...rest }) {
   const total = originalDurationFor(rest);

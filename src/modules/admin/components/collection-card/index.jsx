@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Eye } from "lucide-react";
 
-// Collection Card Component — matches the client-side prebuilt avatar
+// Collection Card Component - matches the client-side prebuilt avatar
 // library's CollectionCard (client/src/modules/common/components/collection-card).
 export function CollectionCard({ collection, onClick }) {
   return (

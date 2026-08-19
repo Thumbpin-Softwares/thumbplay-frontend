@@ -28,7 +28,7 @@ function timeAgo(ts) {
 
 // Shown at /dashboard/edit whenever no composition is currently open. Both
 // "continue an existing draft" and "start editing a new clip" live on this
-// one page — no separate screen to navigate to.
+// one page - no separate screen to navigate to.
 export function EditDashboard({ onOpen }) {
   const [drafts, setDrafts] = useState(() => listDrafts());
   const [pendingDelete, setPendingDelete] = useState(null);

@@ -1,7 +1,7 @@
 const DRAFTS_KEY = "edit_drafts_v1";
 
 /** Multiple saved edits (one per video) live here, keyed by draftKeyFor(...),
- *  in localStorage — unlike the single active composition in sessionStorage
+ *  in localStorage - unlike the single active composition in sessionStorage
  *  (see COMPOSITION_STORAGE_KEY), these need to survive closing the tab so
  *  they can show up as resumable draft cards on the /dashboard/edit dashboard. */
 function readStore() {
@@ -19,7 +19,7 @@ function writeStore(store) {
   } catch (_) {}
 }
 
-/** Stable per-video draft key — prefers the underlying Asset id (works even
+/** Stable per-video draft key - prefers the underlying Asset id (works even
  *  if the video is regenerated/reprobed) and falls back to a signature of
  *  the composition's source URLs for compositions without one. */
 export function draftKeyFor(compositionProps) {
@@ -52,7 +52,7 @@ export function clearDraft(key) {
   writeStore(store);
 }
 
-/** All saved drafts, most recently edited first — for the dashboard grid. */
+/** All saved drafts, most recently edited first - for the dashboard grid. */
 export function listDrafts() {
   const store = readStore();
   return Object.entries(store)

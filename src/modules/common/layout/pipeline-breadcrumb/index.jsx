@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight, Home } from "lucide-react";
 
-// Only these routes count as "pipelines" — library/edit/credits/profile/etc.
+// Only these routes count as "pipelines" - library/edit/credits/profile/etc.
 // are utility pages and don't get a breadcrumb.
 const PIPELINE_LABELS = {
   "luxury-car-exit": "Luxury Car Exit",

@@ -4,7 +4,7 @@ const DEFAULT_STEPS = ["Add Assets", "Script", "Finalize"];
 
 // Pill-shaped step tracker shown at the top of every template's flow.
 // Shared across all templates (property-commercial and everything that
-// comes after it) — only the `steps` labels and click behavior differ
+// comes after it) - only the `steps` labels and click behavior differ
 // per template; the prompts/API calls each step triggers live elsewhere.
 export function StepCapsule({ currentStep = 0, steps = DEFAULT_STEPS, maxStep, onStepClick = null }) {
   const reachable = maxStep ?? currentStep - 1;

@@ -11,7 +11,7 @@ function formatTime(iso) {
   return new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 }
 
-// Polling-based chat (no WebSocket infra needed) — same message shape/API
+// Polling-based chat (no WebSocket infra needed) - same message shape/API
 // would work with a real socket later without touching this component's UI.
 export function SupportChat() {
   const [messages, setMessages] = useState([]);

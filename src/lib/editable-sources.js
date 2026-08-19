@@ -4,18 +4,18 @@
 //
 // compositionType selects which Remotion component/duration-calc the Editor
 // (modules/edit/layout/editor) uses for preview + render props:
-//   "seedance"    — avatarVideoUrl + brollClips + ctaVideoUrl + part2AudioUrl
-//                   (SeedanceReelComposition) — no active producer since
+//   "seedance"    - avatarVideoUrl + brollClips + ctaVideoUrl + part2AudioUrl
+//                   (SeedanceReelComposition) - no active producer since
 //                   news-anchor was purged; kept in case a future pipeline
 //                   needs this shape again, otherwise a purge candidate.
-//   "action-reel" — part1VideoUrl + part2VideoUrl, two flat baked-audio clips
-//                   (ActionReelComposition) — action-reel/comedy-reel/luxury-car-exit
+//   "action-reel" - part1VideoUrl + part2VideoUrl, two flat baked-audio clips
+//                   (ActionReelComposition) - action-reel/comedy-reel/luxury-car-exit
 //
 // isFlatExport sources are already-rendered/flattened MP4s (a previous export)
-// reopened as a single-clip "action-reel" composition (part1 only, no part2) —
+// reopened as a single-clip "action-reel" composition (part1 only, no part2) -
 // lets a user re-trim/re-cut/add music/captions to something they already
 // exported, always starting from a fresh blank edit (never resumes the
-// original session that produced the export — see buildCompositionFromAsset).
+// original session that produced the export - see buildCompositionFromAsset).
 export const EDITABLE_SOURCES = {
   "luxury-car-exit": {
     compositionType: "action-reel",
@@ -24,7 +24,7 @@ export const EDITABLE_SOURCES = {
     downloadFilename: "luxury-car-exit.mp4",
   },
   // Back-compat: assets generated before the "seedance-reel" pipeline was
-  // renamed to "luxury-car-exit" still have this old metadata.source value —
+  // renamed to "luxury-car-exit" still have this old metadata.source value -
   // keep them editable by pointing at the same (moved) render endpoint.
   "seedance-reel": {
     compositionType: "action-reel",
@@ -44,7 +44,7 @@ export const EDITABLE_SOURCES = {
     generatorPath: "/dashboard/comedy-reel",
     downloadFilename: "comedy-reel.mp4",
   },
-  // Flattened exports from each pipeline's render-remotion route — reopenable
+  // Flattened exports from each pipeline's render-remotion route - reopenable
   // as a single-clip composition, re-exported through the shared generic
   // endpoint below (which re-tags the new export as "video-export").
   "luxury-car-exit-export": {
@@ -69,7 +69,7 @@ export const EDITABLE_SOURCES = {
     downloadFilename: "comedy-reel.mp4",
   },
   // model-tour (the property-commercial template's Residential flow) is a
-  // single flat video straight out of fal's omni-hometour-pipeline — no
+  // single flat video straight out of fal's omni-hometour-pipeline - no
   // part1/part2 split, so it reopens the same way a flattened export does:
   // a single-clip "action-reel" composition (part1 only).
   "model-tour": {
@@ -80,7 +80,7 @@ export const EDITABLE_SOURCES = {
     downloadFilename: "home-tour.mp4",
   },
   // What re-exporting any of the above (or re-exporting a re-export) gets
-  // tagged as — still editable again the same way, so a user can keep
+  // tagged as - still editable again the same way, so a user can keep
   // trimming/re-cutting/re-captioning an export indefinitely.
   "video-export": {
     compositionType: "action-reel",
@@ -122,7 +122,7 @@ export async function getAudioDuration(url) {
   });
 }
 
-/** Build Remotion composition props from a saved Asset's metadata (best-effort —
+/** Build Remotion composition props from a saved Asset's metadata (best-effort -
  * brollClips timing/ctaText are reconstructed via duration probing, not the
  * exact values used at generation time). */
 export async function buildCompositionFromAsset(asset) {

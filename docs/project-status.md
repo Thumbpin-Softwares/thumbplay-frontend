@@ -1,4 +1,4 @@
-# Thumbpin Platform — Project Status (April 28, 2026)
+# Thumbpin Platform - Project Status (April 28, 2026)
 
 This document summarizes the current platform state based strictly on implemented code in this repository. It lists what is live in the codebase, how it works today, and the near-term scope without exaggeration.
 
@@ -87,8 +87,8 @@ This document summarizes the current platform state based strictly on implemente
 | product_video | 1 | video |
 | real_estate_video | 3 | video |
 | product_avatar_image | 1 | avatar |
-| image_generation | 1 | — |
-| gemini_image_generation | 1 | — |
+| image_generation | 1 | - |
+| gemini_image_generation | 1 | - |
 
 ---
 

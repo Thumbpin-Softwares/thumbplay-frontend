@@ -7,9 +7,9 @@ import { useGenerationPipeline } from "@/modules/common/hooks/use-generation-pip
 import { GenerationProgressShell } from "@/modules/common/components/generation-progress-shell";
 
 /**
- * GenerationProgress for the Comedy Reel pipeline — same 2-video-slot shape
+ * GenerationProgress for the Comedy Reel pipeline - same 2-video-slot shape
  * as action-reel, reusing the "ActionReel" Remotion composition (comedy-reel's
- * output — two baked-audio clips, hard cut — is identical to action-reel's).
+ * output - two baked-audio clips, hard cut - is identical to action-reel's).
  *
  * Once both Seedance clips are ready, renders them into one final downloadable
  * mp4 (finalizeMode: "render") instead of redirecting straight to the editor.

@@ -5,13 +5,13 @@ import { Check, ChevronLeft, Loader2, Sparkles } from "lucide-react";
 import { CAPTION_PRESETS } from "@/lib/remotion/caption-presets";
 import { computeCaptionCreditCost } from "@/lib/credit-costs";
 
-// Preset preview clips are hosted on Cloudflare R2 — falls back to a plain
+// Preset preview clips are hosted on Cloudflare R2 - falls back to a plain
 // label tile if a given preset's mp4 hasn't been uploaded yet.
 function presetVideoUrl(preset) {
   return `https://content.thumbpin.in/captions/${preset.id}.mp4`;
 }
 
-// Static grid thumbnails sit at this timestamp instead of frame 0 — most
+// Static grid thumbnails sit at this timestamp instead of frame 0 - most
 // presets open on the same plain background before captions kick in, so 0s
 // looks identical across every tile.
 const THUMBNAIL_FRAME_TIME = 2.5;
@@ -43,7 +43,7 @@ const LANGUAGES = [
   { code: "sv-SE", label: "Swedish" },
 ];
 
-// Target languages for VEED's translation_language param — used as a workaround
+// Target languages for VEED's translation_language param - used as a workaround
 // when a source script (e.g. Devanagari, Thai) isn't supported for styled rendering.
 const TRANSLATE_TO = [
   { code: "en-US", label: "English" },
@@ -70,7 +70,7 @@ const POSITIONS = [
 ];
 
 // mode "apply" (default) fires onGenerate immediately and tracks progress via
-// captionState, same as the main Editor — captions are rendered right away.
+// captionState, same as the main Editor - captions are rendered right away.
 // mode "select" is for flows (like the model-tour Captions & Logo step) where
 // the base video may not exist yet: onGenerate just records the user's choice
 // for the caller to apply later, so there's no busy/progress state to show

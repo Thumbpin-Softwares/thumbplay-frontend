@@ -18,7 +18,7 @@ const FPS = 30;
 
 // Plain-<img> stand-in for the logo overlay, used while the base video is
 // still generating and the real Player/ActionReelComposition (which is what
-// actually draws overlays once mounted) isn't up yet — without this, picking
+// actually draws overlays once mounted) isn't up yet - without this, picking
 // a logo before the video finishes rendered no preview at all, since the
 // canvas was just a loading spinner.
 function LogoPreview({ overlays }) {
@@ -48,7 +48,7 @@ function createLogoOverlay(url) {
   };
 }
 
-// Step 4 of the model-tour flow — shown right after Finalize kicks off the
+// Step 4 of the model-tour flow - shown right after Finalize kicks off the
 // background n8n render (jobPhase comes from useModelTourVideoJob, still
 // polling underneath this screen). The user can pick a caption style and
 // place a logo *while* the base video is still generating; both choices are
@@ -103,7 +103,7 @@ export function ModelTourPostProcess({ jobPhase, jobError, resultUrl, onRetryJob
       if (!res.ok) throw new Error(data.error || "Upload failed");
 
       const overlay = createLogoOverlay(data.asset.url);
-      // One logo at a time — a second upload replaces the first rather than stacking.
+      // One logo at a time - a second upload replaces the first rather than stacking.
       setOverlays([overlay]);
       setSelectedOverlayId(overlay.id);
     } catch (err) {
@@ -250,7 +250,7 @@ export function ModelTourPostProcess({ jobPhase, jobError, resultUrl, onRetryJob
   return (
     <div className="space-y-4 animate-fade-in">
       {/* Fixed height so the right panel's overflow-y-auto actually clips
-          instead of growing the whole page — a flex row with no bounded
+          instead of growing the whole page - a flex row with no bounded
           height has nothing for "auto" to clip against. */}
       <div className="flex gap-4 h-130">
         {/* Canvas */}
@@ -306,7 +306,7 @@ export function ModelTourPostProcess({ jobPhase, jobError, resultUrl, onRetryJob
               />
             )}
 
-            {/* Drag layer, caption position preview, and final-bake spinner —
+            {/* Drag layer, caption position preview, and final-bake spinner -
                 all shown regardless of whether the base video has finished,
                 so staging a logo/caption choice always has visible feedback. */}
             {activePanel === "logo" && (

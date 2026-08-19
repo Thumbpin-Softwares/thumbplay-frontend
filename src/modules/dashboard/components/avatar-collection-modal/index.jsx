@@ -63,7 +63,7 @@ export function AvatarCollectionModal({ open, onClose, onUploaded }) {
     try {
       const fd = new FormData();
       filledItems.forEach((item, i) => fd.append(`presenterImage_${i}`, item.file));
-      fd.append("name", collectionName.trim() || `My Avatars — ${new Date().toLocaleDateString()}`);
+      fd.append("name", collectionName.trim() || `My Avatars - ${new Date().toLocaleDateString()}`);
 
       const res = await fetch("/api/veo-long-ad/presenter/upload", { method: "POST", body: fd });
       const data = await res.json();

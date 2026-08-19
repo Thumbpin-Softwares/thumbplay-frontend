@@ -4,7 +4,7 @@ import dbConnect from "@/lib/mongodb";
 import Ticket from "@/models/Ticket";
 import "@/models/User"; // registers the "User" model so Ticket.populate("userId") resolves
 
-// GET /api/admin/support/tickets?status=open — every user's ticket, newest first.
+// GET /api/admin/support/tickets?status=open - every user's ticket, newest first.
 export async function GET(request) {
   const session = await verifyAdminSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

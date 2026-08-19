@@ -5,7 +5,7 @@ import Conversation from "@/models/Conversation";
 import Message from "@/models/Message";
 import "@/models/User"; // registers the "User" model so Conversation.populate("userId") resolves
 
-// GET /api/admin/support/conversations — every user's support thread,
+// GET /api/admin/support/conversations - every user's support thread,
 // most recently active first, with an unread (by admin) count each.
 export async function GET() {
   const session = await verifyAdminSession();

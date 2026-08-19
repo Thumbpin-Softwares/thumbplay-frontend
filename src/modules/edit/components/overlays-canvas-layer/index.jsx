@@ -91,7 +91,7 @@ function OverlayHitBox({ overlay, containerRef, selected, editing, onSelect, onM
   };
 
   // Invisible mirror of the real text block, used only to measure its
-  // wrapped height (see the effect above) — never shown to the user.
+  // wrapped height (see the effect above) - never shown to the user.
   const measurer = overlay.type === "text" && (
     <div
       ref={measureRef}
@@ -167,7 +167,7 @@ function OverlayHitBox({ overlay, containerRef, selected, editing, onSelect, onM
 }
 
 /**
- * Transparent drag layer overlaid on the Remotion <Player> canvas — lets the
+ * Transparent drag layer overlaid on the Remotion <Player> canvas - lets the
  * user reposition overlays by dragging. The actual visible text/image is
  * rendered inside the composition itself (SeedanceReelComposition); this
  * layer only draws selection/drag hitboxes at the same percent-based

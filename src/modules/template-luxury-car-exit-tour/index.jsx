@@ -12,6 +12,7 @@ import { StepFinalize } from "@/modules/template/layout/StepFinalize";
 import { StepGeneration } from "@/modules/template/layout/StepGeneration";
 import { useModelTourVideoJob } from "@/modules/template-property-commercial/hooks/useModelTourVideoJob";
 import { ModelTourPostProcess } from "@/modules/template-property-commercial/components/ModelTourPostProcess";
+import { ChunkReviewGrid } from "@/modules/template-property-commercial/components/ChunkReviewGrid";
 import { ModelTourGenerations } from "@/modules/template-property-commercial/components/ModelTourGenerations";
 import { ModelTourFinalize } from "@/modules/template-property-commercial/components/ModelTourFinalize";
 import { History } from "lucide-react";
@@ -20,7 +21,7 @@ import { Button } from "@/components/ui/button";
 const STEP_LABELS = ["Add Assets", "Script", "Finalize", "Captions & Logo"];
 
 // This template is a straight clone of template-property-commercial's n8n
-// model-tour pipeline — same SiteForm fields, same finalize/post-process UI,
+// model-tour pipeline - same SiteForm fields, same finalize/post-process UI,
 // same shared components/backend endpoints. The only thing that differs is
 // which n8n workflow generates the script: we send `template: "luxury-car-exit"`
 // in modelTourScriptRequest, and the backend (model-tour.service.ts's
@@ -28,7 +29,7 @@ const STEP_LABELS = ["Add Assets", "Script", "Finalize", "Captions & Logo"];
 // Video-render and splitter/voice-change stages stay shared infra.
 const MODEL_TOUR_CLASSIFICATIONS = new Set(["residential", "commercial", "plotted"]);
 
-// Own sessionStorage keys — distinct from template-property-commercial's so
+// Own sessionStorage keys - distinct from template-property-commercial's so
 // the two templates don't clobber each other's in-progress form/job state
 // if a user has both open (e.g. in different tabs).
 const FORM_STATE_KEY = "luxury-car-exit-tour-form-state";
@@ -330,7 +331,16 @@ export default function LuxuryCarExitTourRunner({ template }) {
             />
           )}
 
-          {step === 3 && isModelTourFlow && (
+          {step === 3 && isModelTourFlow && videoJob.phase === "chunks_ready" && (
+            <ChunkReviewGrid
+              chunks={videoJob.chunks}
+              onRegenerate={videoJob.regenerateChunk}
+              onCombine={videoJob.combine}
+              onBack={() => setStep(2)}
+            />
+          )}
+
+          {step === 3 && isModelTourFlow && videoJob.phase !== "chunks_ready" && (
             <ModelTourPostProcess
               jobPhase={videoJob.phase}
               jobError={videoJob.error}

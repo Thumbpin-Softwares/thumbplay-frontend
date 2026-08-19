@@ -4,7 +4,7 @@ const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
  * Server-side only. Calls the backend over a normal server-to-server fetch
  * (no CORS/cookie restrictions apply there) and hands back any Set-Cookie
  * headers it returned, so the caller can re-issue them as its own
- * same-domain cookies — this is what lets the frontend's Next.js server see
+ * same-domain cookies - this is what lets the frontend's Next.js server see
  * a session even though the backend lives on a different registrable
  * domain and the browser will never forward its cookie here directly.
  */

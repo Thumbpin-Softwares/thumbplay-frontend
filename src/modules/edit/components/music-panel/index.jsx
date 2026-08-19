@@ -17,7 +17,7 @@ function formatTime(seconds) {
  * playing, with a scrub bar to audition any part of it.
  *
  * Selecting a track shows a ruler spanning the track's full length with a
- * draggable window sized to the reel's duration — the window's position is
+ * draggable window sized to the reel's duration - the window's position is
  * the trim start, so the user picks which section of the track plays under
  * the video instead of always using the beginning.
  */
@@ -91,7 +91,7 @@ export function MusicPanel({ music, reelDurationSeconds, onSelect, onTrimChange,
 
   // The panel unmounts whenever the user switches to another tab (only
   // rendered while active), so a track selected earlier needs to be
-  // re-loaded into the fresh <audio> element on remount — otherwise
+  // re-loaded into the fresh <audio> element on remount - otherwise
   // `duration` never gets set and the ruler is stuck on "Loading track…".
   useEffect(() => {
     if (music) loadTrack(music);

@@ -11,7 +11,7 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const template = getTemplateBySlug(slug);
   if (!template) return {};
-  return { title: `${template.title} — Thumbplay.ai` };
+  return { title: `${template.title} - Thumbplay.ai` };
 }
 
 export default async function TemplatePage({ params }) {

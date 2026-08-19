@@ -6,7 +6,7 @@ const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
 const AUTH_COOKIE_NAME = "auth_token";
 
 // Thin SSE pass-through to thumbpin-backend's POST /seedance-reel/generate-pipeline
-// (the "luxury car exit" pipeline — mounted under its pre-rename module name
+// (the "luxury car exit" pipeline - mounted under its pre-rename module name
 // on the backend, unchanged frontend route/path for the live UI).
 export async function POST(request) {
   const cookieStore = await cookies();

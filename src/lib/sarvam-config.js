@@ -1,5 +1,5 @@
 // Sarvam AI (Bulbul v3) voice catalog. IDs are prefixed with "sarvam:" so
-// lib/voice-tts.js can route a voiceId to the right provider — the prefix
+// lib/voice-tts.js can route a voiceId to the right provider - the prefix
 // is an internal implementation detail, never shown in the UI.
 export const SARVAM_VOICES = [
   // Male
@@ -46,7 +46,7 @@ export const SARVAM_VOICES = [
 export const SARVAM_MODEL = "bulbul:v3";
 
 // Our internal `language` field -> Sarvam's target_language_code (BCP-47).
-// hinglish/urdu have no dedicated Sarvam code — hi-IN handles code-mixed Hindi fine.
+// hinglish/urdu have no dedicated Sarvam code - hi-IN handles code-mixed Hindi fine.
 export const SARVAM_LANGUAGE_CODES = {
   english: "en-IN",
   hindi: "hi-IN",

@@ -22,7 +22,7 @@ import {
 
 // All three route through the n8n model-tour pipeline now (it switches its
 // master prompt internally based on `type`). "Land" is shown to the user in
-// place of "Plotted" — the value sent as `type` is still "plotted", n8n's
+// place of "Plotted" - the value sent as `type` is still "plotted", n8n's
 // switch doesn't change.
 const CLASSIFICATIONS = [
   { id: "commercial", label: "Commercial", description: "Offices, malls, business centers", icon: Building2 },
@@ -89,7 +89,7 @@ const PROJECT_TYPES = [
 ];
 
 // Commercial doesn't fit the residential Affordable/Luxury/Ultra Luxury
-// tiering — it's categorized by the kind of space instead.
+// tiering - it's categorized by the kind of space instead.
 const COMMERCIAL_PROJECT_TYPES = [
   { id: "it-parks-corporate-towers", label: "IT Parks & Corporate Towers" },
   { id: "co-working-spaces", label: "Co-working Spaces" },
@@ -107,7 +107,7 @@ const LAND_PROJECT_TYPES = [
   { id: "industrial-plots", label: "Industrial Plots" },
 ];
 
-// Script/voice language for the model-tour n8n pipeline — passed through as
+// Script/voice language for the model-tour n8n pipeline - passed through as
 // a raw string, not used locally to pick a TTS voice (unlike the reel/
 // car-exit pipelines' Sarvam-backed language list in utils/constants.js).
 const LANGUAGES = [
@@ -162,7 +162,7 @@ function TextField({ label, field, values, setField, required, placeholder, hint
   );
 }
 
-// Bordered selectable card — shared visual for the Property Classification
+// Bordered selectable card - shared visual for the Property Classification
 // and Script mode pickers, modeled on the avatar-selection card pattern in
 // ModelSelector (border highlight + check badge when selected).
 function OptionCard({ icon: Icon, label, description, selected, onClick }) {
@@ -192,7 +192,7 @@ function OptionCard({ icon: Icon, label, description, selected, onClick }) {
   );
 }
 
-// Allows picking several descriptors at once — stored as the same kind of
+// Allows picking several descriptors at once - stored as the same kind of
 // comma-joined string a free-text field would produce, so downstream
 // consumers (modelTourScriptRequest, isSiteFormValid) don't need to know
 // it's backed by a multi-select. Shared by Tonality and Vibe.
@@ -236,7 +236,7 @@ function MultiSelectField({ label, field, options, values, setField, required, p
   );
 }
 
-// Shared "Script" step form — collects the details used to generate the
+// Shared "Script" step form - collects the details used to generate the
 // script/voice for a template's pipeline. Shared across all templates;
 // which fields render depends on Property Classification, but the form
 // shell itself is the same everywhere.
@@ -255,7 +255,7 @@ export function SiteForm({ values = {}, onChange }) {
         ? LAND_PROJECT_TYPES
         : PROJECT_TYPES;
 
-  // Stored as the option's label (not its id) — sent to n8n as `tier_class`,
+  // Stored as the option's label (not its id) - sent to n8n as `tier_class`,
   // and a plain label like "Shopping Malls" is far easier for the LLM
   // prompt to read than a slug like "shopping-malls". Affordable/Luxury/
   // Ultra Luxury and the Commercial space types are disjoint sets, so a

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Ticket from "@/models/Ticket";
 
-// GET /api/support/tickets — the current user's own tickets, newest first.
+// GET /api/support/tickets - the current user's own tickets, newest first.
 export async function GET(request) {
   const { resolveUserFromSession } = await import("@/lib/user-resolver");
   const user = await resolveUserFromSession(request);

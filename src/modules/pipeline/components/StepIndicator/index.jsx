@@ -1,7 +1,7 @@
 const DEFAULT_STEPS = ["Add Assets", "Script", "Finalize"];
 
 export function StepIndicator({ currentStep = 0, steps = DEFAULT_STEPS, maxStep, onStepClick = null }) {
-  // `maxStep` is the furthest step the user has already filled in — lets them
+  // `maxStep` is the furthest step the user has already filled in - lets them
   // hop forward to it again, not just back. Callers that don't pass it keep
   // the original back-only behavior (only steps strictly before currentStep).
   const reachable = maxStep ?? currentStep - 1;

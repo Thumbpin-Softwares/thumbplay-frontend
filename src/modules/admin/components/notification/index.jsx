@@ -3,7 +3,7 @@
 import { toast } from "sonner";
 import { CheckCircle2, XCircle, Info, Loader2, AlertTriangle } from "lucide-react";
 
-// Admin-branded toast presets — same black/lime look as the edit page's
+// Admin-branded toast presets - same black/lime look as the edit page's
 // editNotify (client/src/modules/edit/components/notification), on top of
 // sonner's global <Toaster/>. Call these instead of the raw `toast` import
 // from "sonner" so every notification in the admin panel stays consistent.

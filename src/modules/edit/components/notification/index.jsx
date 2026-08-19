@@ -3,7 +3,7 @@
 import { toast } from "sonner";
 import { CheckCircle2, XCircle, Info, Loader2, AlertTriangle } from "lucide-react";
 
-// Editor-branded toast presets — same black/lime look as the rest of the
+// Editor-branded toast presets - same black/lime look as the rest of the
 // editor UI, on top of sonner's global <Toaster/> (mounted in the root
 // layout). Call these instead of the raw `toast` import from "sonner" so
 // every notification in the edit page stays visually consistent.

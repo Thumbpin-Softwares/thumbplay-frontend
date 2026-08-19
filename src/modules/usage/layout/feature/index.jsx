@@ -248,7 +248,7 @@ export default function Feature() {
             AI-powered captions. Automatically generate subtitles, choose their
             placement and style, and translate them into multiple languages in
             seconds. With beautifully formatted captions, your message stays
-            clear and compelling—even when viewers watch with the sound off.
+            clear and compelling-even when viewers watch with the sound off.
           </p>
         </div>
       </div>

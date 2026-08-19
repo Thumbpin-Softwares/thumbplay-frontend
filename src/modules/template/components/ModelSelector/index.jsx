@@ -17,8 +17,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-// Shared "Add Assets" tile — presenter/avatar selection. Two top-level tabs:
-// "Agent Library" (browse — prebuilt agents and the user's own uploaded
+// Shared "Add Assets" tile - presenter/avatar selection. Two top-level tabs:
+// "Agent Library" (browse - prebuilt agents and the user's own uploaded
 // collections, as two categories inside one "Browse Agents" dialog) and
 // "Upload Presenter" (upload a fresh collection). Used by every template's
 // Add Assets step, driven by the same `useAvatars` hook each template
@@ -86,7 +86,7 @@ export function ModelSelector({ avatarHook, prebuiltLabel = "RE Agents", uploadE
   }, [previewCollection]);
 
   // Fetched unconditionally on mount (like reAvatars) rather than gated to a
-  // tab being open — the top-level preview card needs to resolve a selection
+  // tab being open - the top-level preview card needs to resolve a selection
   // against `myAssets` even when the browse dialog was never opened this
   // session (e.g. a session-restored selection).
   const fetchMyAssets = () => {
@@ -160,7 +160,7 @@ export function ModelSelector({ avatarHook, prebuiltLabel = "RE Agents", uploadE
         ))}
       </div>
 
-      {/* Agent Library — a selection preview + "Browse Agents", which opens
+      {/* Agent Library - a selection preview + "Browse Agents", which opens
           a dialog with two categories: the user's own uploaded collections
           and the template's prebuilt agents. */}
       {activeTabId === "library" && (
@@ -284,7 +284,7 @@ export function ModelSelector({ avatarHook, prebuiltLabel = "RE Agents", uploadE
                   try {
                     const fd = new FormData();
                     uploadItems.forEach((item, i) => fd.append(`presenterImage_${i}`, item.file));
-                    fd.append("name", collectionName.trim() || `My Presenter — ${new Date().toLocaleDateString()}`);
+                    fd.append("name", collectionName.trim() || `My Presenter - ${new Date().toLocaleDateString()}`);
                     const res = await fetch(uploadEndpoint, { method: "POST", body: fd });
                     const data = await res.json();
                     if (!res.ok) throw new Error(data.error || "Upload failed");
@@ -331,7 +331,7 @@ export function ModelSelector({ avatarHook, prebuiltLabel = "RE Agents", uploadE
         </div>
       )}
 
-      {/* Collection photo preview — carousel */}
+      {/* Collection photo preview - carousel */}
       <Dialog open={!!previewCollection} onOpenChange={(open) => !open && setPreviewCollection(null)}>
         <DialogContent
           className="max-w-none sm:max-w-lg md:max-w-sm w-full h-full sm:h-[80vh] p-0 sm:p-6 gap-0 border-0 flex flex-col"
@@ -421,7 +421,7 @@ export function ModelSelector({ avatarHook, prebuiltLabel = "RE Agents", uploadE
         </DialogContent>
       </Dialog>
 
-      {/* Browse Agents — two categories: the user's own uploaded collections
+      {/* Browse Agents - two categories: the user's own uploaded collections
           and the template's prebuilt agents. */}
       <Dialog open={showAgentBrowser} onOpenChange={setShowAgentBrowser}>
         <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col min-h-0">

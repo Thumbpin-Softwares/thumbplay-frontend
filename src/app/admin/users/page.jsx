@@ -29,7 +29,7 @@ export default function AdminUsersPage() {
     return () => clearTimeout(t);
   }, [search]);
 
-  // Reset page whenever the debounced search term actually changes — adjusted
+  // Reset page whenever the debounced search term actually changes - adjusted
   // during render (React's recommended pattern) instead of a dedicated effect,
   // since this is pure state sync with no side effect to perform.
   if (debouncedSearch !== appliedSearch) {

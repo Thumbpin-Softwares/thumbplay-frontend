@@ -21,7 +21,7 @@ import { LANGUAGES } from "@/utils/constants";
 import { ELEVENLABS_VOICES } from "@/lib/elevenlabs-config";
 
 /**
- * StepFinalize — Step 2 for the Luxury Car Exit pipeline.
+ * StepFinalize - Step 2 for the Luxury Car Exit pipeline.
  *
  * A review screen between Script and the actual generation: shows everything
  * collected in Step 0 (photos + avatar shots) and Step 1 (script + voice),

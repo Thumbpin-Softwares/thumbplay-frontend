@@ -73,7 +73,7 @@ export function getCreditErrorPayload({ action, user, costOverride }) {
 }
 
 /**
- * Read-only affordability check — does NOT deduct anything. For helper steps
+ * Read-only affordability check - does NOT deduct anything. For helper steps
  * (script writing, voice previews) that precede a pipeline's real
  * consumeCreditsForAction call: blocks a 0-credit user from using them at all,
  * without double-charging on top of the pipeline's own debit/refund.
@@ -92,7 +92,7 @@ export async function hasSufficientCreditsForAction({ userId, action, costOverri
 
   const isFreePlan = (user.plan || "free") === "free";
 
-  // Dynamic-cost actions (costOverride set) always spend paid credits — the
+  // Dynamic-cost actions (costOverride set) always spend paid credits - the
   // free-quota buckets only make sense for actions with a flat catalog cost.
   if (isFreePlan && config.freeBucket && costOverride == null) {
     const field = getFreeBucketField(config.freeBucket);
@@ -134,7 +134,7 @@ export async function consumeCreditsForAction({ userId, action, metadata = {}, c
 
   const isFreePlan = (user.plan || "free") === "free";
 
-  // Dynamic-cost actions (costOverride set) always spend paid credits — the
+  // Dynamic-cost actions (costOverride set) always spend paid credits - the
   // free-quota buckets only make sense for actions with a flat catalog cost.
   if (isFreePlan && config.freeBucket && costOverride == null) {
     const field = getFreeBucketField(config.freeBucket);

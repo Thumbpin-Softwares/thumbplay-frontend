@@ -2,11 +2,11 @@
 
 ThumbPlay AI is an AI-powered video advertising platform that enables businesses, marketers, and creators to generate fully edited, high-quality advertisements in as little as 15 minutes.
 
-Turn your real estate ideas into engaging social media advertisements, recreate high-performing creative styles, and discover what works best in your niche—all powered by AI.
+Turn your real estate ideas into engaging social media advertisements, recreate high-performing creative styles, and discover what works best in your niche-all powered by AI.
 
 ## What We Do
 
-ThumbPlay AI simplifies the entire video advertisement creation process by transforming your project details into ready-to-publish, cinematic-quality ads. Instead of relying on traditional production methods, our AI automates content creation, avatar selection, voice generation, lip-syncing, editing, and final video rendering—all within a single platform.
+ThumbPlay AI simplifies the entire video advertisement creation process by transforming your project details into ready-to-publish, cinematic-quality ads. Instead of relying on traditional production methods, our AI automates content creation, avatar selection, voice generation, lip-syncing, editing, and final video rendering-all within a single platform.
 
 ## How It Works
 

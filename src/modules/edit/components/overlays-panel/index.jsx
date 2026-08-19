@@ -62,7 +62,7 @@ export function OverlaysPanel({
     <div className="flex flex-col gap-4">
       <p className="text-xs text-muted-foreground">
         {imageOnly
-          ? "Upload your logo, then drag it anywhere on the canvas — it stays there for the whole video."
+          ? "Upload your logo, then drag it anywhere on the canvas - it stays there for the whole video."
           : "Add text or an image, then drag it anywhere on the canvas it stays there for the whole video."}
       </p>
 

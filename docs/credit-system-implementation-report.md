@@ -146,10 +146,10 @@ Defined in [src/lib/credit-system.js](src/lib/credit-system.js).
 | avatar_photo | 1 | avatar |
 | avatar_looks | 1 | avatar |
 | product_avatar_image | 1 | avatar |
-| image_generation | 1 | — |
-| gemini_image_generation | 1 | — |
-| avatar_group_training | 25 | — |
-| digital_twin_training | 25 | — |
+| image_generation | 1 | - |
+| gemini_image_generation | 1 | - |
+| avatar_group_training | 25 | - |
+| digital_twin_training | 25 | - |
 
 ---
 

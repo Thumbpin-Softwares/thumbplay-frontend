@@ -31,11 +31,11 @@ export async function POST(request) {
   }
 
   // When previewing the user's own script (not the canned sample), speak the
-  // whole thing — they're fine-tuning wording/voice settings, not just auditioning.
+  // whole thing - they're fine-tuning wording/voice settings, not just auditioning.
   const userScriptText = text?.trim();
 
   const PREVIEW_TEXTS = {
-    hindi:    "यह शानदार प्रॉपर्टी लग्जरी और आराम का परफेक्ट मेल है! — आज ही अपनी साइट विजिट बुक करें!",
+    hindi:    "यह शानदार प्रॉपर्टी लग्जरी और आराम का परफेक्ट मेल है! - आज ही अपनी साइट विजिट बुक करें!",
     hinglish: "Yeh stunning property luxury aur comfort ka perfect blend hai. Aaj hi site visit book karein!",
     tamil:    "இந்த அழகான சொத்து ஆடம்பரம் மற்றும் வசதியின் சரியான கலவையை வழங்குகிறது. இன்றே தள வருகையை பதிவு செய்யுங்கள்!",
     telugu:   "ఈ అద్భుతమైన ఆస్తి విలాసం మరియు సౌకర్యం యొక్క మిశ్రమాన్ని అందిస్తుంది. ఈరోజే సైట్ విజిట్ బుక్ చేసుకోండి!",

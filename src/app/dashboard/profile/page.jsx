@@ -18,7 +18,7 @@ export default function ProfilePage() {
 
   const displayName =
     profile?.name || user?.name || profile?.email?.split("@")[0] || "User";
-  const displayEmail = profile?.email || user?.email || "—";
+  const displayEmail = profile?.email || user?.email || "-";
   const plan = profile?.plan || "free";
   const credits = profile?.credits ?? 0;
   const joinDate = profile?.createdAt
@@ -27,7 +27,7 @@ export default function ProfilePage() {
         month: "long",
         year: "numeric",
       })
-    : "—";
+    : "-";
   const initials = displayName
     .split(" ")
     .map((w) => w[0])

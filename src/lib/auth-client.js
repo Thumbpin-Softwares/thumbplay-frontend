@@ -18,7 +18,7 @@ export function AuthProvider({ children }) {
       const res = await fetch("/api/auth/session", { cache: "no-store" });
       const data = await res.json();
       if (data?.user) {
-        // The backend's user doc uses Mongo's `_id`, not NextAuth's `id` —
+        // The backend's user doc uses Mongo's `_id`, not NextAuth's `id` -
         // alias it so every call site that still checks `session.user.id`
         // (the NextAuth-era convention used throughout this codebase) keeps
         // working instead of silently never matching.
@@ -48,7 +48,7 @@ export function AuthProvider({ children }) {
 export function useSession() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useSession must be used within an AuthProvider");
-  // `refetch` is an extension beyond next-auth/react's shape — used right
+  // `refetch` is an extension beyond next-auth/react's shape - used right
   // after signIn()/register so the UI reflects the new session immediately
   // instead of waiting for the next natural remount.
   return { data: ctx.user ? { user: ctx.user } : null, status: ctx.status, refetch: ctx.refetch };
@@ -56,11 +56,11 @@ export function useSession() {
 
 export async function signIn(provider, options = {}) {
   if (provider === "google") {
-    // Full-page navigation, not a fetch — Google needs to redirect the
+    // Full-page navigation, not a fetch - Google needs to redirect the
     // browser itself through the backend's OAuth flow. The backend then
     // redirects back to this app's /auth/callback with a one-time code
     // (see thumbpin-backend's googleCallback + this app's /auth/callback).
-    // `origin` tells the backend which frontend to send the user back to —
+    // `origin` tells the backend which frontend to send the user back to -
     // Google's callback carries no Origin header, and the backend may allow
     // more than one frontend (e.g. localhost + prod), so without this it
     // would always redirect to a single fixed default regardless of where
@@ -70,7 +70,7 @@ export async function signIn(provider, options = {}) {
     return;
   }
 
-  // "credentials" — goes through this app's own /api/auth/login proxy
+  // "credentials" - goes through this app's own /api/auth/login proxy
   // (same-origin) so the session cookie ends up on this app's own domain,
   // not the backend's. See lib/backend-proxy.js for why.
   try {
@@ -93,7 +93,7 @@ export async function signOut(options = {}) {
   try {
     await fetch("/api/auth/logout", { method: "POST" });
   } catch {
-    // Ignore — we still want to clear local state and redirect below.
+    // Ignore - we still want to clear local state and redirect below.
   }
   if (typeof window !== "undefined") {
     window.location.href = options.callbackUrl || "/";

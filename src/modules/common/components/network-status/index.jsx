@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { appNotify } from "@/modules/common/components/notification";
 
 // navigator.onLine only reflects "has a network interface", not "can
-// actually reach the internet" (e.g. connected to wifi with no upstream) —
+// actually reach the internet" (e.g. connected to wifi with no upstream) -
 // a real fetch is the only reliable check.
 async function isReallyOnline() {
   if (typeof navigator !== "undefined" && !navigator.onLine) return false;
@@ -16,7 +16,7 @@ async function isReallyOnline() {
   }
 }
 
-// Mounted once at the root layout — shows a persistent warning toast
+// Mounted once at the root layout - shows a persistent warning toast
 // (same look as appNotify.warning, stays until dismissed) whenever the
 // browser loses connectivity, with a Retry action, and auto-dismisses the
 // moment the connection actually comes back.

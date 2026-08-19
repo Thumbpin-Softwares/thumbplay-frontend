@@ -68,7 +68,7 @@ async function synthesizeSarvam(text, voiceId, language) {
 
 /**
  * Synthesizes `text` in `voiceId`'s voice, routing to Sarvam or ElevenLabs
- * based on the voiceId's provider prefix — callers pick a voice from the
+ * based on the voiceId's provider prefix - callers pick a voice from the
  * combined catalog without needing to know which provider it belongs to.
  */
 export async function synthesizeVoice({ text, voiceId, language }) {

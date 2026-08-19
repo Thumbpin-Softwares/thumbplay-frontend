@@ -111,7 +111,7 @@ export function CreditTransactions() {
                 key={transaction._id}
                 className="grid grid-cols-5 gap-4 border-b border-neutral-200 px-3 py-4 text-sm items-center"
               >
-                <p className="capitalize">{transaction.action ?? "—"}</p>
+                <p className="capitalize">{transaction.action ?? "-"}</p>
                 <p
                   className={
                     transaction.eventType.includes("debited")
@@ -123,7 +123,7 @@ export function CreditTransactions() {
                 >
                   {statusLabels[transaction.eventType] ??
                     transaction.eventType ??
-                    "—"}
+                    "-"}
                 </p>
                 <p
                   className={
@@ -144,7 +144,7 @@ export function CreditTransactions() {
                         dateStyle: "medium",
                         timeStyle: "short",
                       })
-                    : "—"}
+                    : "-"}
                 </p>
               </div>
             ))}

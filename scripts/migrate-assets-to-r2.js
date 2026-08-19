@@ -120,7 +120,7 @@ async function main() {
       migrated++;
     } catch (err) {
       if (err.code === 'ENOENT') {
-        console.log("⚠️ File not found on this machine — skipping");
+        console.log("⚠️ File not found on this machine - skipping");
         skipped++;
       } else {
         console.log(`❌ Failed: ${err.message}`);

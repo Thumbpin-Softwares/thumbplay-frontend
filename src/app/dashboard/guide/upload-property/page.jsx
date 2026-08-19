@@ -20,7 +20,7 @@ export default function Page() {
         <p>
           Every home tour, site view, and interior shot our AI generates is
           built on top of the images you upload. The model doesn&apos;t
-          invent the property — it enhances and animates what it sees. Sharp,
+          invent the property - it enhances and animates what it sees. Sharp,
           well-lit, clutter-free photos give the AI clean signal to work
           with, which means smoother camera moves, more accurate lighting,
           and fewer visual artifacts in the final video. Blurry, dark, or
@@ -35,39 +35,39 @@ export default function Page() {
         </p>
         <ul>
           <li>
-            <strong>Exterior / front facade</strong> — a straight-on shot
+            <strong>Exterior / front facade</strong> - a straight-on shot
             showing the full front of the house, ideally with the driveway
             or walkway leading toward the camera.
           </li>
           <li>
-            <strong>Living room and common areas</strong> — shot from a
+            <strong>Living room and common areas</strong> - shot from a
             corner so the room reads as wide and open, not from the doorway
             looking straight in.
           </li>
           <li>
-            <strong>Kitchen</strong> — capture countertops, cabinetry, and
+            <strong>Kitchen</strong> - capture countertops, cabinetry, and
             any island or bar seating in one frame if possible.
           </li>
           <li>
-            <strong>Primary bedroom and bathroom</strong> — these are the
+            <strong>Primary bedroom and bathroom</strong> - these are the
             two rooms buyers spend the most time looking at; give them the
             same care as the living room.
           </li>
           <li>
-            <strong>Backyard / outdoor space</strong> — include the yard,
+            <strong>Backyard / outdoor space</strong> - include the yard,
             patio, or pool if the listing has one; outdoor space sells
             almost as hard as the interior.
           </li>
           <li>
-            <strong>Any standout feature</strong> — a fireplace, a view, a
-            home office, a garage — anything that differentiates the
+            <strong>Any standout feature</strong> - a fireplace, a view, a
+            home office, a garage - anything that differentiates the
             listing is worth its own photo.
           </li>
         </ul>
 
         <h2 className="scroll-mt-24 text-2xl font-semibold tracking-tight text-neutral-900 pt-4 border-t border-neutral-100 first:border-t-0 first:pt-0">Technical checklist</h2>
         <p>
-          Before you upload, run through this quick checklist — it&apos;s the
+          Before you upload, run through this quick checklist - it&apos;s the
           fastest way to guarantee a clean result:
         </p>
         <ul>
@@ -79,7 +79,7 @@ export default function Page() {
           <li>
             <strong>Orientation:</strong> shoot landscape for exteriors and
             wide rooms, portrait for tighter spaces like hallways or
-            bathrooms — don&apos;t rotate a portrait photo to fit a landscape
+            bathrooms - don&apos;t rotate a portrait photo to fit a landscape
             frame.
           </li>
           <li>
@@ -88,7 +88,7 @@ export default function Page() {
             through windows, which blows out highlights.
           </li>
           <li>
-            <strong>Level horizon:</strong> keep the camera level — tilted
+            <strong>Level horizon:</strong> keep the camera level - tilted
             horizons are one of the most common reasons a generated video
             looks {"\""}off.{"\""}
           </li>
@@ -103,28 +103,28 @@ export default function Page() {
           <li>Photos with people, pets, or reflections of the photographer in mirrors or glass.</li>
           <li>Heavy filters, watermarks, or text overlays baked into the image.</li>
           <li>Fisheye or ultra-wide lens shots that visibly distort straight lines.</li>
-          <li>Cluttered rooms — clear countertops and floors read far better once animated.</li>
-          <li>Duplicate near-identical shots of the same angle — pick your best one per room.</li>
+          <li>Cluttered rooms - clear countertops and floors read far better once animated.</li>
+          <li>Duplicate near-identical shots of the same angle - pick your best one per room.</li>
         </ul>
 
         <h2 className="scroll-mt-24 text-2xl font-semibold tracking-tight text-neutral-900 pt-4 border-t border-neutral-100 first:border-t-0 first:pt-0">Matching photos to the right tool</h2>
         <p>
           Once your images are uploaded to your Asset Library, they power a
-          few different generation tools — pick the one that fits what
+          few different generation tools - pick the one that fits what
           you{"\'"}re trying to produce:
         </p>
         <ul>
           <li>
-            <strong>Home Tour</strong> — works best with a full set covering
+            <strong>Home Tour</strong> - works best with a full set covering
             exterior, living areas, kitchen, bedrooms, and bathrooms in the
             order you&apos;d want them to appear in the walkthrough.
           </li>
           <li>
-            <strong>Site View</strong> — best with wide exterior and
+            <strong>Site View</strong> - best with wide exterior and
             aerial-style shots that establish the property&apos;s surroundings.
           </li>
           <li>
-            <strong>Interior Shots</strong> — best with single, well-framed
+            <strong>Interior Shots</strong> - best with single, well-framed
             room photos rather than tight close-ups of fixtures.
           </li>
         </ul>

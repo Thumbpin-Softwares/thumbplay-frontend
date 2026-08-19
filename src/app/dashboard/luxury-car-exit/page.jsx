@@ -17,7 +17,7 @@ const STEP_LABELS = ["Add Assets", "Script", "Finalize"];
 
 function LuxuryCarExitContent() {
   const [step, setStep] = useState(0);
-  // Furthest step the user has actually filled in — lets the capsule jump
+  // Furthest step the user has actually filled in - lets the capsule jump
   // forward to it again (not just back) without redoing already-done steps.
   const [maxStep, setMaxStep] = useState(0);
   const [locationImages, setLocationImages] = useState([]);
@@ -30,7 +30,7 @@ function LuxuryCarExitContent() {
   const avatarHook = useAvatars();
   const skipImageSave = useRef(false);
 
-  // Restore on refresh. An in-flight generation job always wins — it's
+  // Restore on refresh. An in-flight generation job always wins - it's
   // resumed directly by GenerationProgress. Otherwise fall back to the
   // lighter draft (photos, presenter, script, finalize choices) that's
   // continuously saved as the user moves through Upload → Script → Finalize.
@@ -92,7 +92,7 @@ function LuxuryCarExitContent() {
     });
   }, [hydrated, avatarHook.avatarMode, avatarHook.selectedCollectionId, avatarHook.selectedAvatars]);
 
-  // Photos need compressing to data URLs before they can live in sessionStorage —
+  // Photos need compressing to data URLs before they can live in sessionStorage -
   // skip the round-trip right after we've just restored them from a draft.
   useEffect(() => {
     if (!hydrated) return;
@@ -122,7 +122,7 @@ function LuxuryCarExitContent() {
     setMaxStep((prev) => Math.max(prev, next));
   };
 
-  // StepScript hands off the finished script/voice — move to the Finalize
+  // StepScript hands off the finished script/voice - move to the Finalize
   // review screen instead of generating immediately.
   const handleScriptDone = (params) => {
     setScriptParams(params);
@@ -194,7 +194,7 @@ function LuxuryCarExitContent() {
       <div className="flex-1 min-h-0 overflow-y-auto scrollbar-hide">
         <div className="min-h-full flex flex-col justify-center px-2 sm:px-6 lg:px-7 py-4 pb-20 md:pb-4">
           {/* Steps 0/1 stay mounted (hidden, not unmounted) so their internal
-             state — script text, presenter selection, etc. — survives going back. */}
+             state - script text, presenter selection, etc. - survives going back. */}
           <div style={{ display: step === 0 ? "block" : "none" }}>
             <StepUpload
               locationImages={locationImages}

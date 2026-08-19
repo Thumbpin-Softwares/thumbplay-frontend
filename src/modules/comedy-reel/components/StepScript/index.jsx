@@ -49,12 +49,12 @@ const ChevronDown = () => (
 );
 
 /**
- * StepScript — Step 1 for the Comedy Reel pipeline.
+ * StepScript - Step 1 for the Comedy Reel pipeline.
  *
  * Layout matches action-reel/luxury-car-exit's StepScript (script left,
  * Language/Voice/Tone/"Add Your Own" sidebar right). "Add Your Own"
  * (record/upload) mirrors luxury-car-exit's implementation: captured locally
- * for preview only — not yet wired into generation.
+ * for preview only - not yet wired into generation.
  */
 export function StepScript({ onBack, onGenerate }) {
   const { profile } = useUser();
@@ -67,7 +67,7 @@ export function StepScript({ onBack, onGenerate }) {
   const previewAudioRef = useRef(null);
   const scriptPreviewAudioRef = useRef(null);
 
-  // Custom voice (record or upload) — when present, this file is uploaded and
+  // Custom voice (record or upload) - when present, this file is uploaded and
   // sent directly to Seedance as the reference audio for both parts, instead
   // of the prebuilt voice above (see GenerationProgress/generate-pipeline).
   const [customVoiceTab, setCustomVoiceTab] = useState("record");
@@ -248,7 +248,7 @@ export function StepScript({ onBack, onGenerate }) {
       setAiGeneratedScript(data.script || "");
       setScriptWordCount(data.wordCount || 0);
       setScriptEstDuration(data.estimatedDuration || 0);
-      toast.success(`Script ready — ${data.wordCount} words · ~${data.estimatedDuration}s`);
+      toast.success(`Script ready - ${data.wordCount} words · ~${data.estimatedDuration}s`);
     } catch (err) {
       toast.error("Script generation failed", { description: err.message });
     } finally {
@@ -427,7 +427,7 @@ export function StepScript({ onBack, onGenerate }) {
                   </TooltipTrigger>
                   {!affordability.ok && (
                     <TooltipContent>
-                      Not enough credits — need {affordability.required}, you have {affordability.credits}.
+                      Not enough credits - need {affordability.required}, you have {affordability.credits}.
                     </TooltipContent>
                   )}
                 </Tooltip>
@@ -438,7 +438,7 @@ export function StepScript({ onBack, onGenerate }) {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-xs font-medium text-emerald-600 dark:text-emerald-400">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      Script generated — {scriptWordCount} words · ~{scriptEstDuration}s
+                      Script generated - {scriptWordCount} words · ~{scriptEstDuration}s
                     </div>
                     <button
                       onClick={handleGenerateAiScript}
@@ -502,7 +502,7 @@ export function StepScript({ onBack, onGenerate }) {
             </div>
           </div>
 
-          {/* Tone — applies to both AI-written and pasted scripts (affects delivery/punctuation, not the words) */}
+          {/* Tone - applies to both AI-written and pasted scripts (affects delivery/punctuation, not the words) */}
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-neutral-500 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
@@ -648,7 +648,7 @@ export function StepScript({ onBack, onGenerate }) {
         <div className="rounded-xl border border-[#c7f038]/30 bg-[#c7f038]/5 p-3 flex gap-2">
           <Sparkles className="w-3.5 h-3.5 text-[#c7f038] shrink-0 mt-0.5" />
           <p className="text-[11px] text-neutral-700 leading-relaxed">
-            <strong>Comedy Reel pipeline:</strong> The script will be split into 2 parts — Part 1 (comedic hook) and Part 2 (highlights + CTA), each rendered as its own full ~15s Seedance scene with your dialogue baked in.
+            <strong>Comedy Reel pipeline:</strong> The script will be split into 2 parts - Part 1 (comedic hook) and Part 2 (highlights + CTA), each rendered as its own full ~15s Seedance scene with your dialogue baked in.
           </p>
         </div>
       )}
@@ -678,7 +678,7 @@ export function StepScript({ onBack, onGenerate }) {
             </TooltipTrigger>
             {!affordability.ok && (
               <TooltipContent>
-                Not enough credits — need {affordability.required}, you have {affordability.credits}.
+                Not enough credits - need {affordability.required}, you have {affordability.credits}.
               </TooltipContent>
             )}
           </Tooltip>

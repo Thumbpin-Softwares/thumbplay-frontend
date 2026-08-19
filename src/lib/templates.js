@@ -4,7 +4,7 @@
 // that already have a bespoke, fully custom flow keep their own route
 // folder under src/app/dashboard/<slug>/ and just set `href` to point at
 // it. Everything else is served by the single dynamic route
-// src/app/dashboard/template/[slug]/page.jsx — add a `runner` (dynamic
+// src/app/dashboard/template/[slug]/page.jsx - add a `runner` (dynamic
 // import of the step-by-step component) once it's built; until then it
 // falls back to a shared "coming soon" scaffold that still previews the
 // configured steps. This is what lets the catalog scale to 50-100
@@ -62,7 +62,7 @@ export const TEMPLATES = [
 ];
 
 // Templates shown in the catalog. Set `hidden: true` on a template above to
-// keep it out of the listing without deleting its entry — it stays reachable
+// keep it out of the listing without deleting its entry - it stays reachable
 // by direct link via getTemplateBySlug.
 export function getAllTemplates() {
   return TEMPLATES.filter((t) => !t.hidden);
@@ -72,7 +72,7 @@ export function getTemplateBySlug(slug) {
   return TEMPLATES.find((t) => t.slug === slug);
 }
 
-// Templates rendered through the generic /dashboard/template/[slug] route —
+// Templates rendered through the generic /dashboard/template/[slug] route -
 // i.e. everything that doesn't already own a dedicated route via `href`.
 export function getGenericTemplates() {
   return TEMPLATES.filter((t) => !t.href);

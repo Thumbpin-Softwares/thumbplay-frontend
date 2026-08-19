@@ -41,7 +41,7 @@ export default function UserRow({ user, onCreditClick, onUpdate, onDelete }) {
   const initialsColor = getInitialsColor(user._id, user.email);
 
   // Calculate dropdown position when menu opens. The dropdown is `fixed`,
-  // which is already viewport-relative — getBoundingClientRect() is too, so
+  // which is already viewport-relative - getBoundingClientRect() is too, so
   // no scroll-offset math is needed here (adding it double-counted scroll
   // and pushed the dropdown out of view whenever the page had scrolled).
   useEffect(() => {

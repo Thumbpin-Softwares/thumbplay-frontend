@@ -49,7 +49,7 @@ export default function AssetLibraryPage() {
     refetch,
   } = useAssets();
 
-  // "My Avatars" needs its own type-scoped fetch — deriving it from the
+  // "My Avatars" needs its own type-scoped fetch - deriving it from the
   // generic `assets` page above would only surface avatars that happen to
   // land within that page's most-recent 24 mixed-type items, hiding older
   // avatars behind assets of other types.
@@ -305,7 +305,7 @@ export default function AssetLibraryPage() {
     setSelectMode(false);
   }
 
-  // Wraps any asset — single image or multi-photo presenter — as a
+  // Wraps any asset - single image or multi-photo presenter - as a
   // "collection" so it can render through CollectionCard uniformly.
   function toCollection(asset) {
     if (asset.type === "presenter") {
@@ -712,7 +712,7 @@ export default function AssetLibraryPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Collection photo preview — carousel, same UX as the pipeline's
+      {/* Collection photo preview - carousel, same UX as the pipeline's
           "Choose Your Presenter" step: arrows + swipe + dot indicators. */}
       <Dialog
         open={!!previewCollection}

@@ -86,10 +86,10 @@ Canonical action map in `src/lib/credit-system.js`:
 | `avatar_photo` | 1 | `avatar` | HeyGen photo avatar |
 | `avatar_looks` | 1 | `avatar` | HeyGen look generation |
 | `product_avatar_image` | 1 | `avatar` | Gemini avatar image generation |
-| `image_generation` | 1 | — | Generic image generation |
-| `gemini_image_generation` | 1 | — | Gemini/Pollinations image flow |
-| `avatar_group_training` | 25 | — | HeyGen custom avatar training |
-| `digital_twin_training` | 25 | — | HeyGen digital twin training |
+| `image_generation` | 1 | - | Generic image generation |
+| `gemini_image_generation` | 1 | - | Gemini/Pollinations image flow |
+| `avatar_group_training` | 25 | - | HeyGen custom avatar training |
+| `digital_twin_training` | 25 | - | HeyGen digital twin training |
 
 ## 6) Route Coverage
 

@@ -3,7 +3,7 @@ import { ChevronLeft } from "lucide-react";
 import PageEnd from "@/modules/common/components/page-end";
 
 export const metadata = {
-  title: "How to upload good property images — Help Center",
+  title: "How to upload good property images - Help Center",
 };
 
 export default function UploadPropertyGuideLayout({ children }) {
