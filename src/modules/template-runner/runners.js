@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 export const TEMPLATE_RUNNERS = {
   "property-commercial": dynamic(() => import("@/modules/template-property-commercial")),
   "model-exit-luxury-car": dynamic(() => import("@/modules/template-luxury-car-exit-tour")),
+  "drone-flythrough": dynamic(() => import("@/modules/template-drone-flythrough")),
 };
 
 export function getTemplateRunner(slug) {

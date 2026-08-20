@@ -11,7 +11,6 @@ import {
   Columns2,
   BookOpen,
   MessageCircle,
-  Sparkles,
   Bot,
 } from "lucide-react";
 
@@ -20,7 +19,6 @@ const STORAGE_KEY = "aside_collapsed";
 const navItems = [
   { label: "Get Started", href: "/dashboard", icon: Plus },
   { label: "Ad Assistant", href: "/dashboard/agent-chat", icon: Bot },
-  { label: "Studio", href: "/dashboard/studio", icon: Sparkles },
   { label: "Library", href: "/dashboard/assets", icon: FolderOpen },
   { label: "Edit", href: "/dashboard/edit", icon: Pencil },
   { label: "Help Center", href: "/dashboard/help", icon: BookOpen },

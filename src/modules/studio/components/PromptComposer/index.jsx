@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { Loader2, Upload, X, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { BrandingFields } from "@/modules/dashboard/components/branding-fields";
 
 const MAX_IMAGES = 4;
 
@@ -21,9 +22,10 @@ async function uploadImage(file, name) {
 
 // Higgsfield-style composer: one box holding the prompt textarea plus inline
 // image chips, rather than a separate upload grid below the form.
-export function PromptComposer({ workType, creditCost, submitting, onSubmit, placeholder }) {
+export function PromptComposer({ workType, creditCost, submitting, onSubmit, placeholder, showBranding = false }) {
   const [prompt, setPrompt] = useState("");
   const [images, setImages] = useState([]);
+  const [branding, setBranding] = useState({});
   const fileInputRef = useRef(null);
 
   const addImages = async (files) => {
@@ -51,10 +53,11 @@ export function PromptComposer({ workType, creditCost, submitting, onSubmit, pla
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
-    const result = await onSubmit({ workType, prompt: prompt.trim(), imageUrls: uploadedUrls });
+    const result = await onSubmit({ workType, prompt: prompt.trim(), imageUrls: uploadedUrls, branding });
     if (result?.ok) {
       setPrompt("");
       setImages([]);
+      setBranding({});
     }
   };
 
@@ -94,6 +97,12 @@ export function PromptComposer({ workType, creditCost, submitting, onSubmit, pla
               </button>
             </div>
           ))}
+        </div>
+      )}
+
+      {showBranding && (
+        <div className="px-1">
+          <BrandingFields value={branding} onChange={setBranding} />
         </div>
       )}
 
