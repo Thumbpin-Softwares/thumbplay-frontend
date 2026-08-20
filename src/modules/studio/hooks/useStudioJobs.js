@@ -50,13 +50,23 @@ export function useStudioJobs() {
     };
   }, [jobs, fetchJobs]);
 
-  const submit = useCallback(async ({ workType, prompt, imageUrls }) => {
+  const submit = useCallback(async ({ workType, prompt, imageUrls, branding }) => {
     setSubmitting(true);
     try {
       const res = await fetch("/api/studio/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ workType, prompt, imageUrls }),
+        body: JSON.stringify({
+          workType,
+          prompt,
+          imageUrls,
+          // Per-generation branding (see branding.service.ts) - flat field
+          // names matching what the backend reads from the request body.
+          brandingLogoUrl: branding?.logoUrl,
+          brandingAgencyName: branding?.agencyName,
+          brandingContactInfo: branding?.contactInfo,
+          brandingPrimaryColor: branding?.primaryColor,
+        }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || `Server error: ${res.status}`);

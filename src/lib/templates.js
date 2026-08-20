@@ -59,6 +59,14 @@ export const TEMPLATES = [
     tag: "New",
     steps: ["Add Assets", "Script", "Finalize"],
   },
+  {
+    slug: "drone-flythrough",
+    title: "Cinematic Drone Flythrough",
+    category: "real-estate",
+    video: "https://content.thumbpin.in/templates/property-commercial.mp4",
+    tag: "New",
+    steps: ["Add Photos", "Generate"],
+  },
 ];
 
 // Templates shown in the catalog. Set `hidden: true` on a template above to
